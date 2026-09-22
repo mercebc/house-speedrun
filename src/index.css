@@ -455,3 +455,196 @@ a {
   font-weight: 600;
   cursor: pointer;
 }
+
+.task-detail__status-row {
+  margin: 8px 0 16px;
+}
+
+.task-detail__start {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 28px;
+  margin-bottom: 20px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+}
+
+/* Timer */
+
+.timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 40px;
+  gap: 8px;
+}
+
+.timer__task-name {
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.timer__elapsed {
+  font-family: var(--mono);
+  font-size: 88px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin: 16px 0;
+  line-height: 1;
+}
+
+.timer__reference {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.timer__reference > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.timer__reference-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+}
+
+.timer__reference span:last-child {
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer__finish {
+  min-width: 160px;
+  min-height: 64px;
+  padding: 16px 40px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Run result */
+
+.run-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 48px;
+  gap: 6px;
+}
+
+.run-result__trophy {
+  font-size: 48px;
+  margin: 0;
+}
+
+.run-result h1 {
+  font-size: 22px;
+  margin: 0;
+}
+
+.run-result__time {
+  font-family: var(--mono);
+  font-size: 72px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin: 16px 0;
+  line-height: 1;
+}
+
+.run-result__comparison {
+  color: var(--text-muted);
+  font-size: 15px;
+  margin: 0;
+}
+
+.run-result__comparison span {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.run-result__task-name {
+  color: var(--text-muted);
+  margin: 24px 0 8px;
+}
+
+.run-result__done {
+  min-width: 160px;
+  min-height: 56px;
+  padding: 14px 36px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Resume-run prompt */
+
+.timer-resume {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 48px;
+  gap: 8px;
+}
+
+.timer-resume__task-name {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.timer-resume__started {
+  color: var(--text-muted);
+  margin: 0 0 24px;
+}
+
+.timer-resume__actions {
+  display: flex;
+  gap: 12px;
+}
+
+.timer-resume__actions button {
+  min-height: 48px;
+  padding: 12px 28px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.timer-resume__actions button:first-child {
+  border: none;
+  background: var(--accent);
+  color: white;
+}
+
+.timer-resume__actions button:last-child {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+}

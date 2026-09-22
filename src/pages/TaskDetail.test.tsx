@@ -76,6 +76,16 @@ describe('TaskDetail', () => {
     expect(await screen.findByRole('button', { name: /add a photo/i })).toBeInTheDocument()
   })
 
+  it('links to the timer', async () => {
+    renderAt('clean-oven')
+
+    await screen.findByRole('heading', { name: 'Clean oven' })
+    expect(screen.getByRole('link', { name: /start timer/i })).toHaveAttribute(
+      'href',
+      '/tasks/clean-oven/timer',
+    )
+  })
+
   it('shows a not-found message for an unknown task id', async () => {
     renderAt('does-not-exist')
 

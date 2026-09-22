@@ -24,7 +24,9 @@ export function TaskCard({
     <article className="task-card">
       <TaskPhoto taskId={task.id} taskName={task.name} />
       <div className="task-card__main">
-        <h3 className="task-card__name">{task.name}</h3>
+        <h3 className="task-card__name">
+          <Link to={`/tasks/${task.id}`}>{task.name}</Link>
+        </h3>
         <p className="task-card__meta">
           <span aria-hidden="true">{room.icon}</span> <span>{room.name}</span>
           {' · '}
@@ -40,7 +42,7 @@ export function TaskCard({
         <StatusBadge status={status} daysOverdue={daysOverdue} />
       </div>
       <div className="task-card__actions">
-        <Link to={`/tasks/${task.id}`} className="task-card__start">
+        <Link to={`/tasks/${task.id}/timer`} className="task-card__start">
           Start
         </Link>
         <button type="button" className="task-card__log" onClick={onLogCompletion}>

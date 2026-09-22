@@ -4,7 +4,7 @@ import { DEFAULT_SETTINGS } from './storage'
 import { seedRooms } from '../data/seedRooms'
 import { seedTasks } from '../data/seedTasks'
 import type { Task } from '../domain/tasks/task.types'
-import type { CleaningRun } from '../domain/runs/run.types'
+import type { ActiveRun, CleaningRun } from '../domain/runs/run.types'
 
 function buildTask(overrides: Partial<Task> = {}): Task {
   return {
@@ -100,6 +100,32 @@ describe('localStorage StorageService', () => {
       const runs = await storage.getRuns()
 
       expect(runs).toEqual([firstRun, secondRun])
+    })
+  })
+
+  describe('active run', () => {
+    it('returns null when no timer is running', async () => {
+      const storage = createLocalStorageService()
+
+      expect(await storage.getActiveRun()).toBeNull()
+    })
+
+    it('returns a saved active run on a later read', async () => {
+      const storage = createLocalStorageService()
+      const activeRun: ActiveRun = { taskId: 'kitchen-counters', startedAt: '2026-09-22T09:00:00.000Z' }
+
+      await storage.saveActiveRun(activeRun)
+
+      expect(await storage.getActiveRun()).toEqual(activeRun)
+    })
+
+    it('clears the active run when saved as null', async () => {
+      const storage = createLocalStorageService()
+      await storage.saveActiveRun({ taskId: 'kitchen-counters', startedAt: '2026-09-22T09:00:00.000Z' })
+
+      await storage.saveActiveRun(null)
+
+      expect(await storage.getActiveRun()).toBeNull()
     })
   })
 

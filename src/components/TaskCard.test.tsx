@@ -87,9 +87,18 @@ describe('TaskCard', () => {
     expect(screen.getByText('Overdue 1d')).toBeInTheDocument()
   })
 
-  it('links to the task detail / start screen', () => {
+  it('links the Start button to the timer', () => {
     renderCard(buildTask({ id: 'kitchen-counters' }))
 
-    expect(screen.getByRole('link', { name: /start/i })).toHaveAttribute('href', '/tasks/kitchen-counters')
+    expect(screen.getByRole('link', { name: /start/i })).toHaveAttribute('href', '/tasks/kitchen-counters/timer')
+  })
+
+  it('links the task name to its detail page', () => {
+    renderCard(buildTask({ id: 'kitchen-counters', name: 'Kitchen counters' }))
+
+    expect(screen.getByRole('link', { name: 'Kitchen counters' })).toHaveAttribute(
+      'href',
+      '/tasks/kitchen-counters',
+    )
   })
 })

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { TaskPhoto } from '../components/TaskPhoto'
 import { StatusBadge } from '../components/StatusBadge'
 import { LogCompletionForm } from '../components/LogCompletionForm'
@@ -60,7 +60,13 @@ export function TaskDetail({ now = new Date() }: { now?: Date } = {}) {
         <span>{formatFrequency(task.frequencyDays)}</span>
       </p>
 
-      <StatusBadge status={status} daysOverdue={daysOverdue} />
+      <div className="task-detail__status-row">
+        <StatusBadge status={status} daysOverdue={daysOverdue} />
+      </div>
+
+      <Link to={`/tasks/${task.id}/timer`} className="task-detail__start">
+        Start timer
+      </Link>
 
       <div className="task-detail__photo">
         <TaskPhoto taskId={task.id} taskName={task.name} />
