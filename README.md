@@ -59,17 +59,20 @@ src/
 
 ## Status
 
-Phase 1 (Foundation) through Phase 5 (Stats) of the MVP build order in
-SPEC.md are done: project setup, routing, responsive layout, seed data,
-local persistence, task status/due-date calculation, the Tasks and Task
+Phase 1 (Foundation) through Phase 6 (Notifications) of the MVP build
+order in SPEC.md are done — every phase except Phase 7 (Polish):
+project setup, routing, responsive layout, seed data, local
+persistence, task status/due-date calculation, the Tasks and Task
 detail screens (status/room filters, per-task photos, logging a
 completion without the timer), the full Start → Timer → Finish → PB
 result loop (including resuming or discarding a run left active after
 an accidental close), Missions (pick how much time you have, get a
 time-fit mission built from what's overdue, run through it task by
-task to a final summary), and History/Stats (runs grouped by day with
-date filters; total time/runs/PBs this week, current streak, and the
-most-improved task). Notifications are not yet implemented.
+task to a final summary), History/Stats (runs grouped by day with date
+filters; total time/runs/PBs this week, current streak, and the
+most-improved task), and Notifications (the Home screen's overdue
+banner, a Settings screen for the morning reminder/time/threshold, and
+a once-per-day browser notification summarising super-overdue jobs).
 
 ### Deviations from SPEC.md
 
@@ -88,3 +91,14 @@ most-improved task). Notifications are not yet implemented.
   timer, via `markTaskCompleted`. See `src/domain/tasks/task.service.ts`.
 - "Most neglected room" on the Stats screen isn't implemented — SPEC.md
   itself defers it ("Could be calculated later").
+- Settings only exposes the fields that exist in SPEC.md section 27's
+  actual `Settings` model (morning reminder on/off, its time, and the
+  super-overdue threshold). Section 18's "Potential notification
+  settings" mockup also shows "Notify about due today" and "Notify
+  about PBs" toggles, but there's no field for either in the canonical
+  model, so they were left out rather than inventing new settings data.
+- The morning notification is a "check on app open" (once per day,
+  past the configured time), not a true scheduled background push —
+  SPEC.md itself frames real scheduled push notifications as needing a
+  backend ("Future backend: Scheduled job → Check overdue tasks → Push
+  notification"), which is out of scope for this local-only MVP.
