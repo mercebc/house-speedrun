@@ -648,3 +648,242 @@ a {
   background: transparent;
   color: var(--text-muted);
 }
+
+/* Time selector */
+
+.time-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 24px;
+}
+
+.time-selector__option {
+  min-width: 70px;
+  min-height: 48px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.time-selector__option[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: white;
+}
+
+/* Mission card */
+
+.mission-card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  padding: 24px;
+  margin-top: 8px;
+}
+
+.mission-card--empty {
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.mission-card__heading {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  margin: 0 0 4px;
+}
+
+.mission-card__subheading {
+  color: var(--text-muted);
+  margin: 0 0 20px;
+  font-size: 14px;
+}
+
+.mission-card__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mission-card__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mission-card__item-number {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--bg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.mission-card__item-name {
+  flex: 1;
+}
+
+.mission-card__item-duration {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.mission-card__total {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-weight: 700;
+}
+
+.mission-card__total span:last-child {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.mission-card__start {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Mission runner */
+
+.mission-runner__progress {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 20px 0 0;
+}
+
+.mission-step-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 48px;
+  gap: 6px;
+}
+
+.mission-step-result__trophy {
+  font-size: 40px;
+  margin: 0;
+}
+
+.mission-step-result h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.mission-step-result__time {
+  font-family: var(--mono);
+  font-size: 56px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin: 12px 0 24px;
+  line-height: 1;
+}
+
+.mission-step-result__next-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.mission-step-result__next-name {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 24px;
+}
+
+.mission-step-result__start-next {
+  min-width: 160px;
+  min-height: 56px;
+  padding: 14px 36px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mission-complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 48px;
+  gap: 8px;
+}
+
+.mission-complete h1 {
+  font-size: 22px;
+  margin: 0 0 20px;
+}
+
+.mission-complete__row {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  font-size: 16px;
+}
+
+.mission-complete__row span:first-child {
+  color: var(--text-muted);
+}
+
+.mission-complete__row span:last-child {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.mission-complete__pbs {
+  margin: 16px 0 28px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.mission-complete__done {
+  min-width: 160px;
+  min-height: 56px;
+  padding: 14px 36px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+}

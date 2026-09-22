@@ -5,6 +5,7 @@ import { seedRooms } from '../data/seedRooms'
 import { seedTasks } from '../data/seedTasks'
 import type { Task } from '../domain/tasks/task.types'
 import type { ActiveRun, CleaningRun } from '../domain/runs/run.types'
+import type { ActiveMission } from '../domain/missions/mission.types'
 
 function buildTask(overrides: Partial<Task> = {}): Task {
   return {
@@ -126,6 +127,32 @@ describe('localStorage StorageService', () => {
       await storage.saveActiveRun(null)
 
       expect(await storage.getActiveRun()).toBeNull()
+    })
+  })
+
+  describe('active mission', () => {
+    it('returns null when no mission is running', async () => {
+      const storage = createLocalStorageService()
+
+      expect(await storage.getActiveMission()).toBeNull()
+    })
+
+    it('returns a saved active mission on a later read', async () => {
+      const storage = createLocalStorageService()
+      const activeMission: ActiveMission = { taskIds: ['a', 'b'], availableSeconds: 1200, currentIndex: 0 }
+
+      await storage.saveActiveMission(activeMission)
+
+      expect(await storage.getActiveMission()).toEqual(activeMission)
+    })
+
+    it('clears the active mission when saved as null', async () => {
+      const storage = createLocalStorageService()
+      await storage.saveActiveMission({ taskIds: ['a'], availableSeconds: 600, currentIndex: 0 })
+
+      await storage.saveActiveMission(null)
+
+      expect(await storage.getActiveMission()).toBeNull()
     })
   })
 

@@ -1,5 +1,6 @@
 import type { Room, Task } from '../domain/tasks/task.types'
 import type { ActiveRun, CleaningRun } from '../domain/runs/run.types'
+import type { ActiveMission } from '../domain/missions/mission.types'
 import { seedRooms } from '../data/seedRooms'
 import { seedTasks } from '../data/seedTasks'
 import { DEFAULT_SETTINGS, type Settings, type StorageService } from './storage'
@@ -8,6 +9,7 @@ const KEYS = {
   tasks: 'house-speedrun:tasks',
   runs: 'house-speedrun:runs',
   activeRun: 'house-speedrun:active-run',
+  activeMission: 'house-speedrun:active-mission',
   settings: 'house-speedrun:settings',
 } as const
 
@@ -61,6 +63,18 @@ export function createLocalStorageService(): StorageService {
         return
       }
       write(KEYS.activeRun, activeRun)
+    },
+
+    async getActiveMission(): Promise<ActiveMission | null> {
+      return read<ActiveMission | null>(KEYS.activeMission, null)
+    },
+
+    async saveActiveMission(activeMission: ActiveMission | null): Promise<void> {
+      if (activeMission === null) {
+        localStorage.removeItem(KEYS.activeMission)
+        return
+      }
+      write(KEYS.activeMission, activeMission)
     },
 
     async getRooms(): Promise<Room[]> {

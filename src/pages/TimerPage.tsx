@@ -6,6 +6,7 @@ import { finishRun } from '../domain/runs/run.service'
 import type { CleaningRun } from '../domain/runs/run.types'
 import type { Task } from '../domain/tasks/task.types'
 import { useStorage } from '../storage/useStorage'
+import { useElapsedSeconds } from '../utils/useElapsedSeconds'
 
 type Phase = 'loading' | 'resume-prompt' | 'running' | 'finished'
 
@@ -18,8 +19,8 @@ export function TimerPage() {
   const [phase, setPhase] = useState<Phase>('loading')
   const [startedAt, setStartedAt] = useState<Date | null>(null)
   const [resumeMinutesAgo, setResumeMinutesAgo] = useState(0)
-  const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [result, setResult] = useState<CleaningRun | null>(null)
+  const elapsedSeconds = useElapsedSeconds(phase === 'running', startedAt)
 
   useEffect(() => {
     let cancelled = false
@@ -49,18 +50,6 @@ export function TimerPage() {
     }
   }, [storage, taskId])
 
-  useEffect(() => {
-    if (phase !== 'running' || startedAt === null) return
-
-    function tick() {
-      setElapsedSeconds(Math.round((Date.now() - startedAt!.getTime()) / 1000))
-    }
-
-    tick()
-    const interval = setInterval(tick, 1000)
-    return () => clearInterval(interval)
-  }, [phase, startedAt])
-
   const task = tasks?.find((t) => t.id === taskId) ?? null
 
   function handleContinue() {
@@ -71,7 +60,6 @@ export function TimerPage() {
     const now = new Date()
     storage.saveActiveRun({ taskId: task!.id, startedAt: now.toISOString() })
     setStartedAt(now)
-    setElapsedSeconds(0)
     setPhase('running')
   }
 

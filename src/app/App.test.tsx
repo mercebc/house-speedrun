@@ -21,7 +21,7 @@ describe('App routing', () => {
   it('shows the missions screen at /missions', () => {
     renderAt('/missions')
 
-    expect(screen.getByRole('heading', { name: /missions/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /how much time do you have/i })).toBeInTheDocument()
   })
 
   it('shows the tasks screen at /tasks', () => {
