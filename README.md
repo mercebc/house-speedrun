@@ -59,11 +59,14 @@ src/
 
 ## Status
 
-Phase 1 (Foundation) and Phase 2 (Tasks) of the MVP build order in
-SPEC.md are done: project setup, routing, responsive layout, seed data,
-local persistence, task status/due-date calculation, and the Tasks and
-Task detail screens with status/room filters and per-task photos.
-Timer, missions, stats, and notifications are not yet implemented.
+Phase 1 (Foundation), Phase 2 (Tasks), and Phase 3 (Timer) of the MVP
+build order in SPEC.md are done: project setup, routing, responsive
+layout, seed data, local persistence, task status/due-date calculation,
+the Tasks and Task detail screens (status/room filters, per-task photos,
+logging a completion without the timer), and the full
+Start → Timer → Finish → PB result loop, including resuming or
+discarding a run left active after an accidental close. Missions, stats,
+and notifications are not yet implemented.
 
 ### Deviations from SPEC.md
 
@@ -76,3 +79,7 @@ Timer, missions, stats, and notifications are not yet implemented.
 - Each task supports an optional user-uploaded photo (resized client-side,
   stored as a `Blob` in IndexedDB, keyed by task id) for a personalized
   feel. This wasn't in the original spec's data model.
+- Wording never implies a task "was never done" just because it has no
+  logged completion — "Not logged yet" instead of "Never done" — and a
+  task can be marked done (with a backdatable date) without running the
+  timer, via `markTaskCompleted`. See `src/domain/tasks/task.service.ts`.
