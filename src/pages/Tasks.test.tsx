@@ -4,7 +4,9 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { Tasks } from './Tasks'
 import { StorageProvider } from '../storage/StorageProvider'
+import { PhotoStorageProvider } from '../storage/PhotoStorageProvider'
 import { createFakeStorage } from '../test/fakeStorage'
+import { createFakePhotoStorage } from '../test/fakePhotoStorage'
 import type { Room, Task } from '../domain/tasks/task.types'
 
 const now = new Date('2026-09-22T12:00:00.000Z')
@@ -54,7 +56,9 @@ function renderTasksPage(tasks: Task[]) {
   render(
     <MemoryRouter>
       <StorageProvider storage={storage}>
-        <Tasks now={now} />
+        <PhotoStorageProvider storage={createFakePhotoStorage()}>
+          <Tasks now={now} />
+        </PhotoStorageProvider>
       </StorageProvider>
     </MemoryRouter>,
   )

@@ -4,6 +4,7 @@ import type { Room, Task } from '../domain/tasks/task.types'
 import { formatFrequency, formatRelativeDate } from '../utils/dates'
 import { formatDuration } from '../utils/duration'
 import { StatusBadge } from './StatusBadge'
+import { TaskPhoto } from './TaskPhoto'
 
 export function TaskCard({ task, room, now }: { task: Task; room: Room; now: Date }) {
   const status = getTaskStatus(task, now)
@@ -11,6 +12,7 @@ export function TaskCard({ task, room, now }: { task: Task; room: Room; now: Dat
 
   return (
     <article className="task-card">
+      <TaskPhoto taskId={task.id} taskName={task.name} />
       <div className="task-card__main">
         <h3 className="task-card__name">{task.name}</h3>
         <p className="task-card__meta">

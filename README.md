@@ -13,8 +13,10 @@ See [SPEC.md](./SPEC.md) for the full product and technical specification.
 - React + TypeScript + Vite
 - React Router
 - PWA (installable, offline-capable) via `vite-plugin-pwa`
-- Local persistence (`localStorage` for now) behind a `StorageService`
-  abstraction, so a backend can replace it later without touching the UI
+- Local persistence (`localStorage`) behind a `StorageService` abstraction,
+  so a backend can replace it later without touching the UI
+- Photos are stored separately in IndexedDB (via a `PhotoStorageService`),
+  since they're too large for `localStorage`'s quota
 - Vitest + Testing Library
 
 ## Development
@@ -59,6 +61,18 @@ src/
 
 Phase 1 (Foundation) and Phase 2 (Tasks) of the MVP build order in
 SPEC.md are done: project setup, routing, responsive layout, seed data,
-local persistence, task status/due-date calculation, and the Tasks
-screen with status and room filters. Task detail, timer, missions,
-stats, and notifications are not yet implemented.
+local persistence, task status/due-date calculation, and the Tasks and
+Task detail screens with status/room filters and per-task photos.
+Timer, missions, stats, and notifications are not yet implemented.
+
+### Deviations from SPEC.md
+
+- The seed task catalogue (`src/data/seedTasks.ts`) intentionally skips
+  daily/obvious upkeep (dishes, wiping counters, tidying) that happens
+  anyway, and only tracks infrequent, easy-to-forget deep-cleans (oven,
+  fridge, cabinets, windows/mirrors, mopping, etc.), all at a 7+ day
+  frequency — the app is meant to feel like a fun occasional prompt, not
+  a nagging daily checklist.
+- Each task supports an optional user-uploaded photo (resized client-side,
+  stored as a `Blob` in IndexedDB, keyed by task id) for a personalized
+  feel. This wasn't in the original spec's data model.

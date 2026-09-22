@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { TaskCard } from './TaskCard'
+import { PhotoStorageProvider } from '../storage/PhotoStorageProvider'
+import { createFakePhotoStorage } from '../test/fakePhotoStorage'
 import type { Room, Task } from '../domain/tasks/task.types'
 
 const kitchen: Room = { id: 'kitchen', name: 'Kitchen', icon: '🍳', sortOrder: 1 }
@@ -24,7 +26,9 @@ function buildTask(overrides: Partial<Task> = {}): Task {
 function renderCard(task: Task, now = new Date('2026-09-22T12:00:00.000Z')) {
   render(
     <MemoryRouter>
-      <TaskCard task={task} room={kitchen} now={now} />
+      <PhotoStorageProvider storage={createFakePhotoStorage()}>
+        <TaskCard task={task} room={kitchen} now={now} />
+      </PhotoStorageProvider>
     </MemoryRouter>,
   )
 }

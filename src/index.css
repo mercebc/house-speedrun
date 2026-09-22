@@ -275,3 +275,114 @@ a {
 .status-badge--danger {
   color: var(--danger);
 }
+
+.task-photo {
+  flex-shrink: 0;
+}
+
+.task-photo__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.task-photo__placeholder,
+.task-photo__image-wrapper {
+  display: flex;
+  cursor: pointer;
+}
+
+.task-photo__image {
+  display: block;
+  object-fit: cover;
+}
+
+/* Small thumbnail in the task list */
+.task-card .task-photo__placeholder,
+.task-card .task-photo__image-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.task-card .task-photo__placeholder {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.1;
+}
+
+.task-card .task-photo__placeholder span:first-child {
+  font-size: 18px;
+}
+
+.task-card .task-photo__image {
+  width: 100%;
+  height: 100%;
+}
+
+/* Large hero photo on the task detail screen */
+.task-detail__photo .task-photo__placeholder,
+.task-detail__photo .task-photo__image-wrapper {
+  width: 100%;
+  height: 220px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.task-detail__photo .task-photo__placeholder {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  color: var(--text-muted);
+}
+
+.task-detail__photo .task-photo__placeholder span:first-child {
+  font-size: 32px;
+}
+
+.task-detail__photo .task-photo__image {
+  width: 100%;
+  height: 100%;
+}
+
+.task-detail__meta {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 12px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.task-detail__stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin: 20px 0 0;
+}
+
+.task-detail__stats dt {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.task-detail__stats dd {
+  margin: 2px 0 0;
+  font-size: 20px;
+  font-weight: 600;
+}
