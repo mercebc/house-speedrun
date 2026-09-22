@@ -59,14 +59,16 @@ src/
 
 ## Status
 
-Phase 1 (Foundation), Phase 2 (Tasks), and Phase 3 (Timer) of the MVP
-build order in SPEC.md are done: project setup, routing, responsive
-layout, seed data, local persistence, task status/due-date calculation,
-the Tasks and Task detail screens (status/room filters, per-task photos,
-logging a completion without the timer), and the full
-Start → Timer → Finish → PB result loop, including resuming or
-discarding a run left active after an accidental close. Missions, stats,
-and notifications are not yet implemented.
+Phase 1 (Foundation) through Phase 4 (Missions) of the MVP build order
+in SPEC.md are done: project setup, routing, responsive layout, seed
+data, local persistence, task status/due-date calculation, the Tasks
+and Task detail screens (status/room filters, per-task photos, logging
+a completion without the timer), the full Start → Timer → Finish → PB
+result loop (including resuming or discarding a run left active after
+an accidental close), and Missions — pick how much time you have, get
+a time-fit mission built from what's overdue, and run through it task
+by task to a final summary. Stats and notifications are not yet
+implemented.
 
 ### Deviations from SPEC.md
 
