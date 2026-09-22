@@ -9,10 +9,12 @@ import type { Room, Task } from '../domain/tasks/task.types'
 import { formatFrequency, formatRelativeDate } from '../utils/dates'
 import { formatDuration } from '../utils/duration'
 import { useStorage } from '../storage/useStorage'
+import { useSettings } from '../storage/useSettings'
 
 export function TaskDetail({ now = new Date() }: { now?: Date } = {}) {
   const { taskId } = useParams<{ taskId: string }>()
   const storage = useStorage()
+  const { settings } = useSettings()
   const [tasks, setTasks] = useState<Task[] | null>(null)
   const [rooms, setRooms] = useState<Room[]>([])
 
@@ -48,7 +50,7 @@ export function TaskDetail({ now = new Date() }: { now?: Date } = {}) {
     )
   }
 
-  const status = getTaskStatus(task, now)
+  const status = getTaskStatus(task, now, settings.superOverdueDays)
   const daysOverdue = getDaysOverdue(task, now)
 
   return (

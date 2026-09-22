@@ -1,11 +1,12 @@
 import { getDaysOverdue, getTaskStatus } from '../tasks/task.status'
 import type { Task } from '../tasks/task.types'
 import type { Mission } from './mission.types'
+import { DEFAULT_SETTINGS } from '../../storage/storage'
 
 const ELIGIBLE_STATUSES = new Set(['super_overdue', 'overdue', 'due', 'never_done'])
 
-function priorityScore(task: Task, now: Date): number {
-  const status = getTaskStatus(task, now)
+function priorityScore(task: Task, now: Date, superOverdueDays: number): number {
+  const status = getTaskStatus(task, now, superOverdueDays)
   const daysOverdue = getDaysOverdue(task, now)
 
   switch (status) {
@@ -22,8 +23,8 @@ function priorityScore(task: Task, now: Date): number {
   }
 }
 
-function orderByPriority(tasks: Task[], now: Date): Task[] {
-  return [...tasks].sort((a, b) => priorityScore(b, now) - priorityScore(a, now))
+function orderByPriority(tasks: Task[], now: Date, superOverdueDays: number): Task[] {
+  return [...tasks].sort((a, b) => priorityScore(b, now, superOverdueDays) - priorityScore(a, now, superOverdueDays))
 }
 
 // Second-stage optimisation (spec section 9): cluster same-room tasks
@@ -46,10 +47,17 @@ function clusterByRoom(tasks: Task[]): Task[] {
 // A tiny duration-based term breaks ties in favour of using more of the
 // available time, matching the spec's "closest to available without
 // exceeding it" example.
-function selectBestFit(candidates: Task[], capacitySeconds: number, now: Date): Task[] {
+function selectBestFit(
+  candidates: Task[],
+  capacitySeconds: number,
+  now: Date,
+  superOverdueDays: number,
+): Task[] {
   const capacity = Math.max(0, Math.floor(capacitySeconds))
   const n = candidates.length
-  const values = candidates.map((task) => priorityScore(task, now) + task.estimatedSeconds / 1_000_000)
+  const values = candidates.map(
+    (task) => priorityScore(task, now, superOverdueDays) + task.estimatedSeconds / 1_000_000,
+  )
 
   const dp: number[][] = Array.from({ length: n + 1 }, () => new Array<number>(capacity + 1).fill(0))
 
@@ -77,20 +85,27 @@ function selectBestFit(candidates: Task[], capacitySeconds: number, now: Date): 
   return selected
 }
 
-export function buildMission(tasks: Task[], availableSeconds: number, now: Date): Mission {
-  const candidates = tasks.filter((task) => task.active && ELIGIBLE_STATUSES.has(getTaskStatus(task, now)))
+export function buildMission(
+  tasks: Task[],
+  availableSeconds: number,
+  now: Date,
+  superOverdueDays: number = DEFAULT_SETTINGS.superOverdueDays,
+): Mission {
+  const candidates = tasks.filter(
+    (task) => task.active && ELIGIBLE_STATUSES.has(getTaskStatus(task, now, superOverdueDays)),
+  )
 
   if (candidates.length === 0) {
     return { items: [], availableSeconds, totalSeconds: 0, hadEligibleTasks: false }
   }
 
-  const selected = selectBestFit(candidates, availableSeconds, now)
+  const selected = selectBestFit(candidates, availableSeconds, now, superOverdueDays)
 
   if (selected.length === 0) {
     return { items: [], availableSeconds, totalSeconds: 0, hadEligibleTasks: true }
   }
 
-  const items = clusterByRoom(orderByPriority(selected, now))
+  const items = clusterByRoom(orderByPriority(selected, now, superOverdueDays))
   const totalSeconds = items.reduce((sum, task) => sum + task.estimatedSeconds, 0)
 
   return { items, availableSeconds, totalSeconds, hadEligibleTasks: true }

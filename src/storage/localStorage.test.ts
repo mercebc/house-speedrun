@@ -185,4 +185,29 @@ describe('localStorage StorageService', () => {
       expect(result).toEqual(settings)
     })
   })
+
+  describe('last morning notification date', () => {
+    it('returns null when none has been recorded', async () => {
+      const storage = createLocalStorageService()
+
+      expect(await storage.getLastMorningNotificationDate()).toBeNull()
+    })
+
+    it('returns a saved date on a later read', async () => {
+      const storage = createLocalStorageService()
+
+      await storage.saveLastMorningNotificationDate('2026-08-24')
+
+      expect(await storage.getLastMorningNotificationDate()).toBe('2026-08-24')
+    })
+
+    it('clears the date when saved as null', async () => {
+      const storage = createLocalStorageService()
+      await storage.saveLastMorningNotificationDate('2026-08-24')
+
+      await storage.saveLastMorningNotificationDate(null)
+
+      expect(await storage.getLastMorningNotificationDate()).toBeNull()
+    })
+  })
 })

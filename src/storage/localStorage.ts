@@ -11,6 +11,7 @@ const KEYS = {
   activeRun: 'house-speedrun:active-run',
   activeMission: 'house-speedrun:active-mission',
   settings: 'house-speedrun:settings',
+  lastMorningNotificationDate: 'house-speedrun:last-morning-notification-date',
 } as const
 
 function read<T>(key: string, fallback: T): T {
@@ -92,6 +93,18 @@ export function createLocalStorageService(): StorageService {
 
     async saveSettings(settings: Settings): Promise<void> {
       write(KEYS.settings, settings)
+    },
+
+    async getLastMorningNotificationDate(): Promise<string | null> {
+      return read<string | null>(KEYS.lastMorningNotificationDate, null)
+    },
+
+    async saveLastMorningNotificationDate(date: string | null): Promise<void> {
+      if (date === null) {
+        localStorage.removeItem(KEYS.lastMorningNotificationDate)
+        return
+      }
+      write(KEYS.lastMorningNotificationDate, date)
     },
   }
 }

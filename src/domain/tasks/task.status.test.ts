@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getDaysOverdue, getNextDueDate, getTaskStatus } from './task.status'
+import { getDaysOverdue, getNextDueDate, getSuperOverdueTasks, getTaskStatus } from './task.status'
 import type { Task } from './task.types'
 
 function buildTask(overrides: Partial<Task> = {}): Task {
@@ -101,5 +101,43 @@ describe('getTaskStatus', () => {
     expect(getTaskStatus(task, new Date('2026-08-13T00:00:00.000Z'), 5)).toBe('overdue')
     // 14 Aug is 6 days overdue (past the threshold)
     expect(getTaskStatus(task, new Date('2026-08-14T00:00:00.000Z'), 5)).toBe('super_overdue')
+  })
+})
+
+describe('getSuperOverdueTasks', () => {
+  const now = new Date('2026-08-24T00:00:00.000Z')
+
+  it('returns only the tasks that are super-overdue', () => {
+    const superOverdue = buildTask({
+      id: 'super',
+      lastCompletedAt: '2026-08-01T00:00:00.000Z', // due 8 Aug, 16 days overdue
+      frequencyDays: 7,
+    })
+    const merelyOverdue = buildTask({
+      id: 'overdue',
+      lastCompletedAt: '2026-08-16T00:00:00.000Z', // due 23 Aug, 1 day overdue
+      frequencyDays: 7,
+    })
+    const notDue = buildTask({
+      id: 'not-due',
+      lastCompletedAt: '2026-08-20T00:00:00.000Z',
+      frequencyDays: 7,
+    })
+
+    const result = getSuperOverdueTasks([superOverdue, merelyOverdue, notDue], now)
+
+    expect(result.map((t) => t.id)).toEqual(['super'])
+  })
+
+  it('returns an empty array when nothing is super-overdue', () => {
+    const task = buildTask({ lastCompletedAt: '2026-08-20T00:00:00.000Z', frequencyDays: 7 })
+
+    expect(getSuperOverdueTasks([task], now)).toEqual([])
+  })
+
+  it('honours a custom threshold', () => {
+    const task = buildTask({ lastCompletedAt: '2026-08-16T00:00:00.000Z', frequencyDays: 7 }) // 1 day overdue
+
+    expect(getSuperOverdueTasks([task], now, 0)).toEqual([task])
   })
 })

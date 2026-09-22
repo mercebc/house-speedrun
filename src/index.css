@@ -973,3 +973,61 @@ a {
   font-family: var(--mono);
   font-variant-numeric: tabular-nums;
 }
+
+/* Home */
+
+.home-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-weight: 600;
+}
+
+.home-banner--warning {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* Settings */
+
+.settings__field {
+  margin-bottom: 24px;
+}
+
+.settings__field label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.settings__field input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+}
+
+.settings__field input[type='time'],
+.settings__field input[type='number'] {
+  display: block;
+  margin-top: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 16px;
+  width: 140px;
+}
+
+.settings__hint {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}

@@ -7,6 +7,8 @@ import { StorageProvider } from '../storage/StorageProvider'
 import { PhotoStorageProvider } from '../storage/PhotoStorageProvider'
 import { createFakeStorage } from '../test/fakeStorage'
 import { createFakePhotoStorage } from '../test/fakePhotoStorage'
+import { TestSettingsProvider } from '../test/TestSettingsProvider'
+import { DEFAULT_SETTINGS, type Settings } from '../storage/storage'
 import type { Room, Task } from '../domain/tasks/task.types'
 
 const now = new Date('2026-09-22T12:00:00.000Z')
@@ -51,14 +53,16 @@ const notDueTask = buildTask({
   lastCompletedAt: '2026-09-21T00:00:00.000Z', // due 28 Sep, not due yet
 })
 
-function renderTasksPage(tasks: Task[]) {
+function renderTasksPage(tasks: Task[], settings?: Settings) {
   const storage = createFakeStorage({ tasks, rooms: [kitchen, bathroom] })
   render(
     <MemoryRouter>
       <StorageProvider storage={storage}>
-        <PhotoStorageProvider storage={createFakePhotoStorage()}>
-          <Tasks now={now} />
-        </PhotoStorageProvider>
+        <TestSettingsProvider settings={settings}>
+          <PhotoStorageProvider storage={createFakePhotoStorage()}>
+            <Tasks now={now} />
+          </PhotoStorageProvider>
+        </TestSettingsProvider>
       </StorageProvider>
     </MemoryRouter>,
   )
@@ -138,5 +142,23 @@ describe('Tasks page', () => {
     await waitFor(() => expect(screen.queryByText('Not logged yet')).not.toBeInTheDocument())
     const [savedTask] = await storage.getTasks()
     expect(savedTask.lastCompletedAt).toBe(now.toISOString())
+  })
+
+  it('honours a custom super-overdue threshold from settings', async () => {
+    // 5 days overdue: "Overdue" under the default 15-day threshold, but
+    // "Super overdue" once the setting is lowered — proves the Settings
+    // value actually reaches the rendered status, not just a hardcoded default.
+    const fiveDaysOverdue = buildTask({
+      id: 'five-days-overdue',
+      name: 'Hob deep clean',
+      frequencyDays: 7,
+      lastCompletedAt: '2026-09-10T00:00:00.000Z',
+    })
+
+    renderTasksPage([fiveDaysOverdue], { ...DEFAULT_SETTINGS, superOverdueDays: 15 })
+    expect(await screen.findByText('Overdue 5d')).toBeInTheDocument()
+
+    renderTasksPage([fiveDaysOverdue], { ...DEFAULT_SETTINGS, superOverdueDays: 3 })
+    expect(await screen.findByText('Super overdue 5d')).toBeInTheDocument()
   })
 })

@@ -39,3 +39,11 @@ export function getTaskStatus(
   if (daysOverdue > superOverdueDays) return 'super_overdue'
   return 'overdue'
 }
+
+export function getSuperOverdueTasks<T extends DueFields>(
+  tasks: T[],
+  now: Date,
+  superOverdueDays: number = DEFAULT_SETTINGS.superOverdueDays,
+): T[] {
+  return tasks.filter((task) => getTaskStatus(task, now, superOverdueDays) === 'super_overdue')
+}

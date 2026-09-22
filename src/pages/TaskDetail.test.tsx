@@ -7,6 +7,7 @@ import { StorageProvider } from '../storage/StorageProvider'
 import { PhotoStorageProvider } from '../storage/PhotoStorageProvider'
 import { createFakeStorage } from '../test/fakeStorage'
 import { createFakePhotoStorage } from '../test/fakePhotoStorage'
+import { TestSettingsProvider } from '../test/TestSettingsProvider'
 import type { Room, Task } from '../domain/tasks/task.types'
 
 const now = new Date('2026-09-22T12:00:00.000Z')
@@ -30,11 +31,13 @@ function renderAt(taskId: string, tasks: Task[] = [task]) {
   render(
     <MemoryRouter initialEntries={[`/tasks/${taskId}`]}>
       <StorageProvider storage={storage}>
-        <PhotoStorageProvider storage={createFakePhotoStorage()}>
-          <Routes>
-            <Route path="/tasks/:taskId" element={<TaskDetail now={now} />} />
-          </Routes>
-        </PhotoStorageProvider>
+        <TestSettingsProvider>
+          <PhotoStorageProvider storage={createFakePhotoStorage()}>
+            <Routes>
+              <Route path="/tasks/:taskId" element={<TaskDetail now={now} />} />
+            </Routes>
+          </PhotoStorageProvider>
+        </TestSettingsProvider>
       </StorageProvider>
     </MemoryRouter>,
   )

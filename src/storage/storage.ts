@@ -37,4 +37,7 @@ export interface StorageService {
 
   getSettings(): Promise<Settings>
   saveSettings(settings: Settings): Promise<void>
+
+  getLastMorningNotificationDate(): Promise<string | null>
+  saveLastMorningNotificationDate(date: string | null): Promise<void>
 }

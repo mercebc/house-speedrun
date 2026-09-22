@@ -5,6 +5,7 @@ import { getTaskStatus } from '../domain/tasks/task.status'
 import { markTaskCompleted } from '../domain/tasks/task.service'
 import type { Room, Task, TaskStatus } from '../domain/tasks/task.types'
 import { useStorage } from '../storage/useStorage'
+import { useSettings } from '../storage/useSettings'
 
 type StatusFilter = 'all' | TaskStatus
 
@@ -18,6 +19,7 @@ const STATUS_FILTERS: { id: StatusFilter; label: string }[] = [
 
 export function Tasks({ now = new Date() }: { now?: Date } = {}) {
   const storage = useStorage()
+  const { settings } = useSettings()
   const [tasks, setTasks] = useState<Task[]>([])
   const [rooms, setRooms] = useState<Room[]>([])
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
@@ -39,7 +41,7 @@ export function Tasks({ now = new Date() }: { now?: Date } = {}) {
   const visibleTasks = tasks.filter((task) => {
     if (roomFilter !== null && task.roomId !== roomFilter) return false
     if (statusFilter === 'all') return true
-    return getTaskStatus(task, now) === statusFilter
+    return getTaskStatus(task, now, settings.superOverdueDays) === statusFilter
   })
 
   return (

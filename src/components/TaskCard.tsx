@@ -3,6 +3,7 @@ import { getDaysOverdue, getTaskStatus } from '../domain/tasks/task.status'
 import type { Room, Task } from '../domain/tasks/task.types'
 import { formatFrequency, formatRelativeDate } from '../utils/dates'
 import { formatDuration } from '../utils/duration'
+import { useSettings } from '../storage/useSettings'
 import { StatusBadge } from './StatusBadge'
 import { TaskPhoto } from './TaskPhoto'
 
@@ -17,7 +18,8 @@ export function TaskCard({
   now: Date
   onLogCompletion: () => void
 }) {
-  const status = getTaskStatus(task, now)
+  const { settings } = useSettings()
+  const status = getTaskStatus(task, now, settings.superOverdueDays)
   const daysOverdue = getDaysOverdue(task, now)
 
   return (

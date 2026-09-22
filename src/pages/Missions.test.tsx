@@ -5,6 +5,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { Missions } from './Missions'
 import { StorageProvider } from '../storage/StorageProvider'
 import { createFakeStorage } from '../test/fakeStorage'
+import { TestSettingsProvider } from '../test/TestSettingsProvider'
 import type { Task } from '../domain/tasks/task.types'
 
 const now = new Date('2026-09-22T09:00:00.000Z')
@@ -29,10 +30,12 @@ function renderMissions(tasks: Task[]) {
   render(
     <MemoryRouter initialEntries={['/missions']}>
       <StorageProvider storage={storage}>
-        <Routes>
-          <Route path="/missions" element={<Missions now={now} />} />
-          <Route path="/missions/run" element={<p>mission runner</p>} />
-        </Routes>
+        <TestSettingsProvider>
+          <Routes>
+            <Route path="/missions" element={<Missions now={now} />} />
+            <Route path="/missions/run" element={<p>mission runner</p>} />
+          </Routes>
+        </TestSettingsProvider>
       </StorageProvider>
     </MemoryRouter>,
   )

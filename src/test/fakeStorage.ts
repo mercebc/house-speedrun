@@ -10,14 +10,17 @@ export function createFakeStorage(
     runs?: CleaningRun[]
     activeRun?: ActiveRun | null
     activeMission?: ActiveMission | null
+    settings?: Settings
+    lastMorningNotificationDate?: string | null
   } = {},
 ): StorageService {
   let tasks = seed.tasks ?? []
   let runs = seed.runs ?? []
   const rooms = seed.rooms ?? []
-  let settings = DEFAULT_SETTINGS
+  let settings = seed.settings ?? DEFAULT_SETTINGS
   let activeRun = seed.activeRun ?? null
   let activeMission = seed.activeMission ?? null
+  let lastMorningNotificationDate = seed.lastMorningNotificationDate ?? null
 
   return {
     async getTasks() {
@@ -53,6 +56,12 @@ export function createFakeStorage(
     },
     async saveSettings(next: Settings) {
       settings = next
+    },
+    async getLastMorningNotificationDate() {
+      return lastMorningNotificationDate
+    },
+    async saveLastMorningNotificationDate(next: string | null) {
+      lastMorningNotificationDate = next
     },
   }
 }

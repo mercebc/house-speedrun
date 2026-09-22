@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { TaskCard } from './TaskCard'
 import { PhotoStorageProvider } from '../storage/PhotoStorageProvider'
 import { createFakePhotoStorage } from '../test/fakePhotoStorage'
+import { TestSettingsProvider } from '../test/TestSettingsProvider'
 import type { Room, Task } from '../domain/tasks/task.types'
 
 const kitchen: Room = { id: 'kitchen', name: 'Kitchen', icon: '🍳', sortOrder: 1 }
@@ -31,9 +32,11 @@ function renderCard(
 ) {
   render(
     <MemoryRouter>
-      <PhotoStorageProvider storage={createFakePhotoStorage()}>
-        <TaskCard task={task} room={kitchen} now={now} onLogCompletion={onLogCompletion} />
-      </PhotoStorageProvider>
+      <TestSettingsProvider>
+        <PhotoStorageProvider storage={createFakePhotoStorage()}>
+          <TaskCard task={task} room={kitchen} now={now} onLogCompletion={onLogCompletion} />
+        </PhotoStorageProvider>
+      </TestSettingsProvider>
     </MemoryRouter>,
   )
 }

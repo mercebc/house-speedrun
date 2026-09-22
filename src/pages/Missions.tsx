@@ -5,9 +5,11 @@ import { MissionCard } from '../components/MissionCard'
 import { buildMission } from '../domain/missions/mission.builder'
 import type { Task } from '../domain/tasks/task.types'
 import { useStorage } from '../storage/useStorage'
+import { useSettings } from '../storage/useSettings'
 
 export function Missions({ now = new Date() }: { now?: Date } = {}) {
   const storage = useStorage()
+  const { settings } = useSettings()
   const navigate = useNavigate()
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedMinutes, setSelectedMinutes] = useState<number | null>(null)
@@ -16,7 +18,8 @@ export function Missions({ now = new Date() }: { now?: Date } = {}) {
     storage.getTasks().then(setTasks)
   }, [storage])
 
-  const mission = selectedMinutes === null ? null : buildMission(tasks, selectedMinutes * 60, now)
+  const mission =
+    selectedMinutes === null ? null : buildMission(tasks, selectedMinutes * 60, now, settings.superOverdueDays)
 
   async function handleStart() {
     if (mission === null || mission.items.length === 0) return
