@@ -59,16 +59,17 @@ src/
 
 ## Status
 
-Phase 1 (Foundation) through Phase 4 (Missions) of the MVP build order
-in SPEC.md are done: project setup, routing, responsive layout, seed
-data, local persistence, task status/due-date calculation, the Tasks
-and Task detail screens (status/room filters, per-task photos, logging
-a completion without the timer), the full Start → Timer → Finish → PB
+Phase 1 (Foundation) through Phase 5 (Stats) of the MVP build order in
+SPEC.md are done: project setup, routing, responsive layout, seed data,
+local persistence, task status/due-date calculation, the Tasks and Task
+detail screens (status/room filters, per-task photos, logging a
+completion without the timer), the full Start → Timer → Finish → PB
 result loop (including resuming or discarding a run left active after
-an accidental close), and Missions — pick how much time you have, get
-a time-fit mission built from what's overdue, and run through it task
-by task to a final summary. Stats and notifications are not yet
-implemented.
+an accidental close), Missions (pick how much time you have, get a
+time-fit mission built from what's overdue, run through it task by
+task to a final summary), and History/Stats (runs grouped by day with
+date filters; total time/runs/PBs this week, current streak, and the
+most-improved task). Notifications are not yet implemented.
 
 ### Deviations from SPEC.md
 
@@ -85,3 +86,5 @@ implemented.
   logged completion — "Not logged yet" instead of "Never done" — and a
   task can be marked done (with a backdatable date) without running the
   timer, via `markTaskCompleted`. See `src/domain/tasks/task.service.ts`.
+- "Most neglected room" on the Stats screen isn't implemented — SPEC.md
+  itself defers it ("Could be calculated later").
