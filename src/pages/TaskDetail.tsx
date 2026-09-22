@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { TaskPhoto } from '../components/TaskPhoto'
 import { StatusBadge } from '../components/StatusBadge'
+import { LogCompletionForm } from '../components/LogCompletionForm'
 import { getDaysOverdue, getTaskStatus } from '../domain/tasks/task.status'
+import { markTaskCompleted } from '../domain/tasks/task.service'
 import type { Room, Task } from '../domain/tasks/task.types'
 import { formatFrequency, formatRelativeDate } from '../utils/dates'
 import { formatDuration } from '../utils/duration'
@@ -21,6 +23,13 @@ export function TaskDetail({ now = new Date() }: { now?: Date } = {}) {
 
   const task = useMemo(() => tasks?.find((t) => t.id === taskId) ?? null, [tasks, taskId])
   const room = useMemo(() => rooms.find((r) => r.id === task?.roomId) ?? null, [rooms, task])
+
+  async function handleLogCompletion(completedAt: Date) {
+    if (task === null) return
+    const updated = markTaskCompleted(task, completedAt)
+    await storage.saveTask(updated)
+    setTasks((prev) => prev?.map((t) => (t.id === task.id ? updated : t)) ?? null)
+  }
 
   if (tasks === null) {
     return (
@@ -68,9 +77,17 @@ export function TaskDetail({ now = new Date() }: { now?: Date } = {}) {
         </div>
         <div>
           <dt>Last completed</dt>
-          <dd>{task.lastCompletedAt === null ? 'Never' : formatRelativeDate(task.lastCompletedAt, now)}</dd>
+          <dd>{task.lastCompletedAt === null ? 'Not logged' : formatRelativeDate(task.lastCompletedAt, now)}</dd>
         </div>
       </dl>
+
+      <div className="task-detail__log">
+        <h2>Log a completion</h2>
+        <p className="task-detail__log-hint">
+          Already did this without using the app? Log it here so the due date stays accurate.
+        </p>
+        <LogCompletionForm now={now} onLog={handleLogCompletion} />
+      </div>
     </section>
   )
 }

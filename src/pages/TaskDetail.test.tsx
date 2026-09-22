@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { TaskDetail } from './TaskDetail'
 import { StorageProvider } from '../storage/StorageProvider'
@@ -37,6 +38,7 @@ function renderAt(taskId: string, tasks: Task[] = [task]) {
       </StorageProvider>
     </MemoryRouter>,
   )
+  return storage
 }
 
 describe('TaskDetail', () => {
@@ -78,5 +80,25 @@ describe('TaskDetail', () => {
     renderAt('does-not-exist')
 
     expect(await screen.findByText(/task not found/i)).toBeInTheDocument()
+  })
+
+  it('shows "Not logged yet" rather than claiming the task was never done', async () => {
+    renderAt('clean-oven', [{ ...task, lastCompletedAt: null }])
+
+    expect(await screen.findByText('Not logged yet')).toBeInTheDocument()
+  })
+
+  it('lets you log a completion that happened outside the app', async () => {
+    const user = userEvent.setup()
+    const storage = renderAt('clean-oven', [{ ...task, lastCompletedAt: null }])
+    await screen.findByRole('heading', { name: 'Clean oven' })
+
+    await user.click(screen.getByRole('button', { name: /^log it$/i }))
+
+    await waitFor(async () => {
+      const [savedTask] = await storage.getTasks()
+      expect(savedTask.lastCompletedAt).toBe('2026-09-22T00:00:00.000Z')
+    })
+    expect(screen.getByText('Today')).toBeInTheDocument()
   })
 })

@@ -92,12 +92,12 @@ describe('Tasks page', () => {
     expect(screen.queryByText('Kitchen sink')).not.toBeInTheDocument()
   })
 
-  it('filters to only never-done tasks', async () => {
+  it('filters to only tasks with no logged completion', async () => {
     const user = userEvent.setup()
     renderTasksPage([superOverdueTask, neverDoneTask, notDueTask])
     await screen.findByText('Under-stairs storage reset')
 
-    await user.click(screen.getByRole('button', { name: /never done/i }))
+    await user.click(screen.getByRole('button', { name: /not logged/i }))
 
     expect(screen.getByText('Pantry tidy')).toBeInTheDocument()
     expect(screen.queryByText('Under-stairs storage reset')).not.toBeInTheDocument()
@@ -116,13 +116,27 @@ describe('Tasks page', () => {
     expect(screen.queryByText('Kitchen sink')).not.toBeInTheDocument()
   })
 
-  it('combines the never-done filter with an empty result and shows the empty state', async () => {
+  it('combines the not-logged filter with an empty result and shows the empty state', async () => {
     const user = userEvent.setup()
     renderTasksPage([notDueTask])
-    await waitFor(() => expect(screen.getByRole('button', { name: /never done/i })).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByRole('button', { name: /not logged/i })).toBeInTheDocument())
 
-    await user.click(screen.getByRole('button', { name: /never done/i }))
+    await user.click(screen.getByRole('button', { name: /not logged/i }))
 
     expect(await screen.findByText(/no tasks match/i)).toBeInTheDocument()
+  })
+
+  it('lets you log a completion that happened outside the app, updating the status immediately', async () => {
+    const user = userEvent.setup()
+    const storage = renderTasksPage([neverDoneTask])
+    await screen.findByText('Pantry tidy')
+    expect(screen.getByText('Not logged yet')).toBeInTheDocument()
+
+    const logButtons = screen.getAllByRole('button', { name: /log it/i })
+    await user.click(logButtons[0])
+
+    await waitFor(() => expect(screen.queryByText('Not logged yet')).not.toBeInTheDocument())
+    const [savedTask] = await storage.getTasks()
+    expect(savedTask.lastCompletedAt).toBe(now.toISOString())
   })
 })

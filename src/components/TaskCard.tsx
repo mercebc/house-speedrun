@@ -6,7 +6,17 @@ import { formatDuration } from '../utils/duration'
 import { StatusBadge } from './StatusBadge'
 import { TaskPhoto } from './TaskPhoto'
 
-export function TaskCard({ task, room, now }: { task: Task; room: Room; now: Date }) {
+export function TaskCard({
+  task,
+  room,
+  now,
+  onLogCompletion,
+}: {
+  task: Task
+  room: Room
+  now: Date
+  onLogCompletion: () => void
+}) {
   const status = getTaskStatus(task, now)
   const daysOverdue = getDaysOverdue(task, now)
 
@@ -25,13 +35,18 @@ export function TaskCard({ task, room, now }: { task: Task; room: Room; now: Dat
         </p>
         <p className="task-card__last-done">
           Last done{' '}
-          <span>{task.lastCompletedAt === null ? 'Never' : formatRelativeDate(task.lastCompletedAt, now)}</span>
+          <span>{task.lastCompletedAt === null ? 'Not logged' : formatRelativeDate(task.lastCompletedAt, now)}</span>
         </p>
         <StatusBadge status={status} daysOverdue={daysOverdue} />
       </div>
-      <Link to={`/tasks/${task.id}`} className="task-card__start">
-        Start
-      </Link>
+      <div className="task-card__actions">
+        <Link to={`/tasks/${task.id}`} className="task-card__start">
+          Start
+        </Link>
+        <button type="button" className="task-card__log" onClick={onLogCompletion}>
+          Log it
+        </button>
+      </div>
     </article>
   )
 }

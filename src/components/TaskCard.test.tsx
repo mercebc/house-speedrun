@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { TaskCard } from './TaskCard'
 import { PhotoStorageProvider } from '../storage/PhotoStorageProvider'
@@ -23,11 +24,15 @@ function buildTask(overrides: Partial<Task> = {}): Task {
   }
 }
 
-function renderCard(task: Task, now = new Date('2026-09-22T12:00:00.000Z')) {
+function renderCard(
+  task: Task,
+  now = new Date('2026-09-22T12:00:00.000Z'),
+  onLogCompletion: () => void = () => {},
+) {
   render(
     <MemoryRouter>
       <PhotoStorageProvider storage={createFakePhotoStorage()}>
-        <TaskCard task={task} room={kitchen} now={now} />
+        <TaskCard task={task} room={kitchen} now={now} onLogCompletion={onLogCompletion} />
       </PhotoStorageProvider>
     </MemoryRouter>,
   )
@@ -60,10 +65,20 @@ describe('TaskCard', () => {
     expect(screen.getByText('Yesterday')).toBeInTheDocument()
   })
 
-  it('shows "Never" when the task has no completion history', () => {
+  it('shows "Not logged" (not a claim it was never done) when there is no completion history', () => {
     renderCard(buildTask({ lastCompletedAt: null }))
 
-    expect(screen.getByText('Never')).toBeInTheDocument()
+    expect(screen.getByText('Not logged')).toBeInTheDocument()
+  })
+
+  it('offers a quick way to log a completion that wasn\'t recorded through the app', async () => {
+    const onLogCompletion = vi.fn()
+    const user = userEvent.setup()
+    renderCard(buildTask(), undefined, onLogCompletion)
+
+    await user.click(screen.getByRole('button', { name: /log it/i }))
+
+    expect(onLogCompletion).toHaveBeenCalled()
   })
 
   it('shows the computed status badge', () => {

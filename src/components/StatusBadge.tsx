@@ -1,7 +1,7 @@
 import type { TaskStatus } from '../domain/tasks/task.types'
 
 const LABELS: Record<TaskStatus, (daysOverdue: number) => string> = {
-  never_done: () => 'Never done',
+  never_done: () => 'Not logged yet',
   not_due: () => 'Not due',
   due: () => 'Due today',
   overdue: (daysOverdue) => `Overdue ${daysOverdue}d`,

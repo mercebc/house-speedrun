@@ -3,10 +3,10 @@ import { render, screen } from '@testing-library/react'
 import { StatusBadge } from './StatusBadge'
 
 describe('StatusBadge', () => {
-  it('shows "Never done" for a task with no history', () => {
+  it('shows "Not logged yet" (not a claim it was never done) for a task with no history', () => {
     render(<StatusBadge status="never_done" daysOverdue={0} />)
 
-    expect(screen.getByText('Never done')).toBeInTheDocument()
+    expect(screen.getByText('Not logged yet')).toBeInTheDocument()
   })
 
   it('shows "Not due" for a task that is not yet due', () => {

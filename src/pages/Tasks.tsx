@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { TaskCard } from '../components/TaskCard'
 import { RoomFilter } from '../components/RoomFilter'
 import { getTaskStatus } from '../domain/tasks/task.status'
+import { markTaskCompleted } from '../domain/tasks/task.service'
 import type { Room, Task, TaskStatus } from '../domain/tasks/task.types'
 import { useStorage } from '../storage/useStorage'
 
@@ -12,7 +13,7 @@ const STATUS_FILTERS: { id: StatusFilter; label: string }[] = [
   { id: 'due', label: 'Due' },
   { id: 'overdue', label: 'Overdue' },
   { id: 'super_overdue', label: 'Super overdue' },
-  { id: 'never_done', label: 'Never done' },
+  { id: 'never_done', label: 'Not logged' },
 ]
 
 export function Tasks({ now = new Date() }: { now?: Date } = {}) {
@@ -28,6 +29,12 @@ export function Tasks({ now = new Date() }: { now?: Date } = {}) {
   }, [storage])
 
   const roomsById = useMemo(() => new Map(rooms.map((room) => [room.id, room])), [rooms])
+
+  async function handleLogCompletion(task: Task) {
+    const updated = markTaskCompleted(task, now)
+    await storage.saveTask(updated)
+    setTasks((prev) => prev.map((t) => (t.id === task.id ? updated : t)))
+  }
 
   const visibleTasks = tasks.filter((task) => {
     if (roomFilter !== null && task.roomId !== roomFilter) return false
@@ -61,7 +68,15 @@ export function Tasks({ now = new Date() }: { now?: Date } = {}) {
         <div className="task-list">
           {visibleTasks.map((task) => {
             const room = roomsById.get(task.roomId)
-            return room ? <TaskCard key={task.id} task={task} room={room} now={now} /> : null
+            return room ? (
+              <TaskCard
+                key={task.id}
+                task={task}
+                room={room}
+                now={now}
+                onLogCompletion={() => handleLogCompletion(task)}
+              />
+            ) : null
           })}
         </div>
       )}
