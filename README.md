@@ -57,6 +57,8 @@ src/
 
 ## Status
 
-Phase 1 (Foundation) of the MVP build order in SPEC.md: project setup,
-routing, responsive layout, seed data, and local persistence. Task list,
-timer, missions, stats, and notifications are not yet implemented.
+Phase 1 (Foundation) and Phase 2 (Tasks) of the MVP build order in
+SPEC.md are done: project setup, routing, responsive layout, seed data,
+local persistence, task status/due-date calculation, and the Tasks
+screen with status and room filters. Task detail, timer, missions,
+stats, and notifications are not yet implemented.
