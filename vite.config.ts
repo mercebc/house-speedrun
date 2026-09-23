@@ -9,20 +9,27 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'icons.svg'],
+      includeAssets: ['icon.svg'],
       manifest: {
         name: 'House Speedrun',
         short_name: 'Speedrun',
         description: 'Clean smarter. Beat your time.',
         display: 'standalone',
         start_url: '/',
-        theme_color: '#1c1c1c',
+        theme_color: '#2f6f4f',
         background_color: '#faf9f6',
         icons: [
           {
-            src: 'icons.svg',
+            src: 'icon.svg',
             sizes: 'any',
             type: 'image/svg+xml',
+            purpose: 'any',
+          },
+          {
+            src: 'icon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'maskable',
           },
         ],
       },
