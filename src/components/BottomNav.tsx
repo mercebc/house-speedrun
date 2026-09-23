@@ -4,7 +4,7 @@ const NAV_ITEMS = [
   { to: '/', label: 'Home', icon: '🏠', end: true },
   { to: '/missions', label: 'Missions', icon: '⚡', end: false },
   { to: '/tasks', label: 'Tasks', icon: '✓', end: false },
-  { to: '/stats', label: 'Stats', icon: '📊', end: false },
+  { to: '/stats', label: 'Stats', icon: '📈', end: false },
 ]
 
 export function BottomNav() {
