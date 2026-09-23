@@ -6,8 +6,10 @@ import { finishRun } from '../domain/runs/run.service'
 import type { ActiveMission } from '../domain/missions/mission.types'
 import type { Task } from '../domain/tasks/task.types'
 import { formatDuration } from '../utils/duration'
+import { triggerFinishFeedback } from '../utils/feedback'
 import { useElapsedSeconds } from '../utils/useElapsedSeconds'
 import { useStorage } from '../storage/useStorage'
+import { useSettings } from '../storage/useSettings'
 
 type Phase = 'loading' | 'no-mission' | 'running' | 'step-result' | 'complete'
 
@@ -19,6 +21,7 @@ interface MissionSummary {
 
 export function MissionRunner() {
   const storage = useStorage()
+  const { settings } = useSettings()
   const navigate = useNavigate()
 
   const [tasks, setTasks] = useState<Task[] | null>(null)
@@ -63,6 +66,7 @@ export function MissionRunner() {
 
     const finishedAt = new Date()
     const { run, updatedTask } = finishRun(currentTask, startedAt, finishedAt, crypto.randomUUID())
+    triggerFinishFeedback(settings, run.isPersonalBest)
 
     await storage.saveRun(run)
     await storage.saveTask(updatedTask)
@@ -160,6 +164,7 @@ export function MissionRunner() {
         elapsedSeconds={elapsedSeconds}
         personalBestSeconds={currentTask.personalBestSeconds}
         estimatedSeconds={currentTask.estimatedSeconds}
+        showEstimate={settings.showEstimates}
         onFinish={handleFinish}
       />
     </section>

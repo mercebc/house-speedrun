@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { TimerPage } from './TimerPage'
 import { StorageProvider } from '../storage/StorageProvider'
 import { createFakeStorage } from '../test/fakeStorage'
+import { TestSettingsProvider } from '../test/TestSettingsProvider'
 import type { Task } from '../domain/tasks/task.types'
 
 const task: Task = {
@@ -23,9 +24,11 @@ function renderAt(taskId: string, storage = createFakeStorage({ tasks: [task] })
   render(
     <MemoryRouter initialEntries={[`/tasks/${taskId}/timer`]}>
       <StorageProvider storage={storage}>
-        <Routes>
-          <Route path="/tasks/:taskId/timer" element={<TimerPage />} />
-        </Routes>
+        <TestSettingsProvider>
+          <Routes>
+            <Route path="/tasks/:taskId/timer" element={<TimerPage />} />
+          </Routes>
+        </TestSettingsProvider>
       </StorageProvider>
     </MemoryRouter>,
   )

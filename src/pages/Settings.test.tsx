@@ -94,4 +94,49 @@ describe('Settings page', () => {
 
     expect(await screen.findByRole('link', { name: /cleaning supplies/i })).toHaveAttribute('href', '/supplies')
   })
+
+  it('shows the current vibration, sound, and estimate settings once loaded', async () => {
+    renderSettings(
+      createFakeStorage({
+        settings: { ...DEFAULT_SETTINGS, vibrationEnabled: true, soundEnabled: false, showEstimates: true },
+      }),
+    )
+
+    expect(await screen.findByRole('checkbox', { name: /vibration/i })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: /^sound/i })).not.toBeChecked()
+    expect(screen.getByRole('checkbox', { name: /estimated durations/i })).toBeChecked()
+  })
+
+  it('saves a toggled vibration setting', async () => {
+    const user = userEvent.setup()
+    const storage = renderSettings(createFakeStorage({ settings: { ...DEFAULT_SETTINGS, vibrationEnabled: true } }))
+    await screen.findByRole('checkbox', { name: /vibration/i })
+
+    await user.click(screen.getByRole('checkbox', { name: /vibration/i }))
+
+    const saved = await storage.getSettings()
+    expect(saved.vibrationEnabled).toBe(false)
+  })
+
+  it('saves a toggled sound setting', async () => {
+    const user = userEvent.setup()
+    const storage = renderSettings(createFakeStorage({ settings: { ...DEFAULT_SETTINGS, soundEnabled: false } }))
+    await screen.findByRole('checkbox', { name: /^sound/i })
+
+    await user.click(screen.getByRole('checkbox', { name: /^sound/i }))
+
+    const saved = await storage.getSettings()
+    expect(saved.soundEnabled).toBe(true)
+  })
+
+  it('saves a toggled show-estimates setting', async () => {
+    const user = userEvent.setup()
+    const storage = renderSettings(createFakeStorage({ settings: { ...DEFAULT_SETTINGS, showEstimates: true } }))
+    await screen.findByRole('checkbox', { name: /estimated durations/i })
+
+    await user.click(screen.getByRole('checkbox', { name: /estimated durations/i }))
+
+    const saved = await storage.getSettings()
+    expect(saved.showEstimates).toBe(false)
+  })
 })

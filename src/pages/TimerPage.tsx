@@ -6,6 +6,8 @@ import { finishRun } from '../domain/runs/run.service'
 import type { CleaningRun } from '../domain/runs/run.types'
 import type { Task } from '../domain/tasks/task.types'
 import { useStorage } from '../storage/useStorage'
+import { useSettings } from '../storage/useSettings'
+import { triggerFinishFeedback } from '../utils/feedback'
 import { useElapsedSeconds } from '../utils/useElapsedSeconds'
 
 type Phase = 'loading' | 'resume-prompt' | 'running' | 'finished'
@@ -13,6 +15,7 @@ type Phase = 'loading' | 'resume-prompt' | 'running' | 'finished'
 export function TimerPage() {
   const { taskId } = useParams<{ taskId: string }>()
   const storage = useStorage()
+  const { settings } = useSettings()
   const navigate = useNavigate()
 
   const [tasks, setTasks] = useState<Task[] | null>(null)
@@ -66,6 +69,7 @@ export function TimerPage() {
   async function handleFinish() {
     const finishedAt = new Date()
     const { run, updatedTask } = finishRun(task!, startedAt!, finishedAt, crypto.randomUUID())
+    triggerFinishFeedback(settings, run.isPersonalBest)
 
     await storage.saveRun(run)
     await storage.saveTask(updatedTask)
@@ -125,6 +129,7 @@ export function TimerPage() {
       elapsedSeconds={elapsedSeconds}
       personalBestSeconds={task.personalBestSeconds}
       estimatedSeconds={task.estimatedSeconds}
+      showEstimate={settings.showEstimates}
       onFinish={handleFinish}
     />
   )

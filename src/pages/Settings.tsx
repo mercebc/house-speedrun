@@ -72,6 +72,42 @@ function SettingsForm({
       </div>
 
       <div className="settings__field">
+        <label>
+          <input
+            type="checkbox"
+            checked={settings.vibrationEnabled}
+            onChange={(event) => updateSettings({ ...settings, vibrationEnabled: event.target.checked })}
+          />
+          Vibration
+        </label>
+        <p className="settings__hint">A haptic tick when you finish a task, longer for a personal best.</p>
+      </div>
+
+      <div className="settings__field">
+        <label>
+          <input
+            type="checkbox"
+            checked={settings.soundEnabled}
+            onChange={(event) => updateSettings({ ...settings, soundEnabled: event.target.checked })}
+          />
+          Sound
+        </label>
+        <p className="settings__hint">A chime when you set a personal best.</p>
+      </div>
+
+      <div className="settings__field">
+        <label>
+          <input
+            type="checkbox"
+            checked={settings.showEstimates}
+            onChange={(event) => updateSettings({ ...settings, showEstimates: event.target.checked })}
+          />
+          Show estimated durations
+        </label>
+        <p className="settings__hint">Display estimated durations on tasks and the timer.</p>
+      </div>
+
+      <div className="settings__field">
         <Link to="/supplies" className="settings__link">
           Cleaning supplies catalogue →
         </Link>

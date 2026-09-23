@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { MissionRunner } from './MissionRunner'
 import { StorageProvider } from '../storage/StorageProvider'
 import { createFakeStorage } from '../test/fakeStorage'
+import { TestSettingsProvider } from '../test/TestSettingsProvider'
 import type { Task } from '../domain/tasks/task.types'
 import type { ActiveMission } from '../domain/missions/mission.types'
 
@@ -31,10 +32,12 @@ function renderRunner(tasks: Task[], activeMission: ActiveMission | null) {
   render(
     <MemoryRouter initialEntries={['/missions/run']}>
       <StorageProvider storage={storage}>
-        <Routes>
-          <Route path="/missions/run" element={<MissionRunner />} />
-          <Route path="/tasks" element={<p>tasks page</p>} />
-        </Routes>
+        <TestSettingsProvider>
+          <Routes>
+            <Route path="/missions/run" element={<MissionRunner />} />
+            <Route path="/tasks" element={<p>tasks page</p>} />
+          </Routes>
+        </TestSettingsProvider>
       </StorageProvider>
     </MemoryRouter>,
   )

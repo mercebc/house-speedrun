@@ -44,6 +44,22 @@ describe('Timer', () => {
     expect(screen.getByText('25:00')).toBeInTheDocument()
   })
 
+  it('hides the estimate when showEstimate is false', () => {
+    render(
+      <Timer
+        taskName="Clean oven"
+        elapsedSeconds={0}
+        personalBestSeconds={null}
+        estimatedSeconds={1500}
+        showEstimate={false}
+        onFinish={() => {}}
+      />,
+    )
+
+    expect(screen.queryByText('25:00')).not.toBeInTheDocument()
+    expect(screen.queryByText('Estimated')).not.toBeInTheDocument()
+  })
+
   it('calls onFinish when the FINISH button is pressed', async () => {
     const onFinish = vi.fn()
     const user = userEvent.setup()

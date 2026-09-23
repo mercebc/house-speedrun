@@ -87,10 +87,12 @@ export function TaskDetail({ now = new Date() }: { now?: Date } = {}) {
           <dt>Personal best</dt>
           <dd>{task.personalBestSeconds === null ? '—' : formatDuration(task.personalBestSeconds)}</dd>
         </div>
-        <div>
-          <dt>Estimate</dt>
-          <dd>{formatDuration(task.estimatedSeconds)}</dd>
-        </div>
+        {settings.showEstimates && (
+          <div>
+            <dt>Estimate</dt>
+            <dd>{formatDuration(task.estimatedSeconds)}</dd>
+          </div>
+        )}
         <div>
           <dt>Last completed</dt>
           <dd>{task.lastCompletedAt === null ? 'Not logged' : formatRelativeDate(task.lastCompletedAt, now)}</dd>

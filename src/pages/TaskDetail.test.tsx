@@ -8,6 +8,7 @@ import { PhotoStorageProvider } from '../storage/PhotoStorageProvider'
 import { createFakeStorage } from '../test/fakeStorage'
 import { createFakePhotoStorage } from '../test/fakePhotoStorage'
 import { TestSettingsProvider } from '../test/TestSettingsProvider'
+import { DEFAULT_SETTINGS } from '../storage/storage'
 import type { Room, Task } from '../domain/tasks/task.types'
 import type { Supply } from '../domain/supplies/supply.types'
 
@@ -32,12 +33,12 @@ const task: Task = {
   supplyIds: ['oven-cleaner', 'rubber-gloves'],
 }
 
-function renderAt(taskId: string, tasks: Task[] = [task]) {
+function renderAt(taskId: string, tasks: Task[] = [task], settings = DEFAULT_SETTINGS) {
   const storage = createFakeStorage({ tasks, rooms: [kitchen], supplies })
   render(
     <MemoryRouter initialEntries={[`/tasks/${taskId}`]}>
       <StorageProvider storage={storage}>
-        <TestSettingsProvider>
+        <TestSettingsProvider settings={settings}>
           <PhotoStorageProvider storage={createFakePhotoStorage()}>
             <Routes>
               <Route path="/tasks/:taskId" element={<TaskDetail now={now} />} />
@@ -112,6 +113,21 @@ describe('TaskDetail', () => {
     renderAt('clean-oven', [{ ...task, lastCompletedAt: null }])
 
     expect(await screen.findByText('Not logged yet')).toBeInTheDocument()
+  })
+
+  it('shows the estimate stat when showEstimates is enabled', async () => {
+    renderAt('clean-oven', [task], { ...DEFAULT_SETTINGS, showEstimates: true })
+
+    expect(await screen.findByText('Estimate')).toBeInTheDocument()
+    expect(screen.getByText('25:00')).toBeInTheDocument()
+  })
+
+  it('hides the estimate stat when showEstimates is disabled', async () => {
+    renderAt('clean-oven', [task], { ...DEFAULT_SETTINGS, showEstimates: false })
+
+    await screen.findByRole('heading', { name: 'Clean oven' })
+    expect(screen.queryByText('Estimate')).not.toBeInTheDocument()
+    expect(screen.queryByText('25:00')).not.toBeInTheDocument()
   })
 
   it('lets you log a completion that happened outside the app', async () => {
