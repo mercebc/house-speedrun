@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { ItemPhoto } from './ItemPhoto'
 import { PhotoStorageProvider } from '../storage/PhotoStorageProvider'
 import type { PhotoStorageService } from '../storage/photoStorage'
+import type { ReactNode } from 'react'
 
 vi.mock('../utils/image', () => ({
   resizeImage: vi.fn(async (file: Blob) => file),
@@ -38,10 +39,10 @@ afterEach(() => {
   vi.clearAllMocks()
 })
 
-function renderItemPhoto(storage: PhotoStorageService) {
+function renderItemPhoto(storage: PhotoStorageService, defaultIcon?: ReactNode) {
   render(
     <PhotoStorageProvider storage={storage}>
-      <ItemPhoto itemId="clean-oven" itemName="Clean oven" />
+      <ItemPhoto itemId="clean-oven" itemName="Clean oven" defaultIcon={defaultIcon} />
     </PhotoStorageProvider>,
   )
 }
@@ -58,6 +59,22 @@ describe('ItemPhoto', () => {
 
     const image = await screen.findByRole('img', { name: 'Clean oven' })
     expect(image).toHaveAttribute('src', 'blob:fake-url')
+  })
+
+  it('shows the default icon with a change affordance when one is provided and no photo exists', async () => {
+    renderItemPhoto(createFakePhotoStorage(), <svg data-testid="default-icon" />)
+
+    const changeButton = await screen.findByRole('button', { name: /^change$/i })
+    expect(changeButton.querySelector('[data-testid="default-icon"]')).toBeInTheDocument()
+    expect(screen.queryByText(/add a photo/i)).not.toBeInTheDocument()
+    expect(screen.getByLabelText(/change photo/i, { selector: 'input' })).toBeInTheDocument()
+  })
+
+  it('labels the input as "Change photo" once a photo already exists, even with no default icon', async () => {
+    renderItemPhoto(createFakePhotoStorage(new Blob(['bytes'], { type: 'image/jpeg' })))
+
+    await screen.findByRole('img', { name: 'Clean oven' })
+    expect(screen.getByLabelText(/change photo/i, { selector: 'input' })).toBeInTheDocument()
   })
 
   it('uploads and displays a new photo when a file is selected', async () => {

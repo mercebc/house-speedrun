@@ -1,10 +1,18 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { usePhotoStorage } from '../storage/usePhotoStorage'
 import { resizeImage } from '../utils/image'
 
 // A small upload-or-display photo control keyed by an arbitrary item id —
 // used for both task photos and supply-catalog product photos.
-export function ItemPhoto({ itemId, itemName }: { itemId: string; itemName: string }) {
+export function ItemPhoto({
+  itemId,
+  itemName,
+  defaultIcon,
+}: {
+  itemId: string
+  itemName: string
+  defaultIcon?: ReactNode
+}) {
   const storage = usePhotoStorage()
   const inputId = useId()
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
@@ -43,12 +51,25 @@ export function ItemPhoto({ itemId, itemName }: { itemId: string; itemName: stri
     setPhotoUrl(url)
   }
 
+  const actionLabel = photoUrl !== null || defaultIcon !== undefined ? 'Change photo' : 'Add a photo'
+
   return (
     <div className="item-photo">
       {photoUrl === null ? (
         <label htmlFor={inputId} className="item-photo__placeholder" role="button">
-          <span aria-hidden="true">📷</span>
-          <span>Add a photo</span>
+          {defaultIcon !== undefined ? (
+            <>
+              <span className="item-photo__default-icon" aria-hidden="true">
+                {defaultIcon}
+              </span>
+              <span className="item-photo__default-label">Change</span>
+            </>
+          ) : (
+            <>
+              <span aria-hidden="true">📷</span>
+              <span>Add a photo</span>
+            </>
+          )}
         </label>
       ) : (
         <label htmlFor={inputId} className="item-photo__image-wrapper">
@@ -60,7 +81,7 @@ export function ItemPhoto({ itemId, itemName }: { itemId: string; itemName: stri
         type="file"
         accept="image/*"
         capture="environment"
-        aria-label="Add a photo"
+        aria-label={actionLabel}
         className="item-photo__input"
         onChange={handleFileSelected}
       />

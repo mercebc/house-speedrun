@@ -3,6 +3,23 @@ import { ItemPhoto } from '../components/ItemPhoto'
 import type { Task } from '../domain/tasks/task.types'
 import type { Supply } from '../domain/supplies/supply.types'
 import { useStorage } from '../storage/useStorage'
+import { SUPPLY_DEFAULT_PHOTOS } from '../data/supplyDefaultPhotos'
+
+// Only consumable/chemical products are worth swapping for your own brand.
+// Reusable tools (utensils) always just show their default photo.
+const UPLOADABLE_SUPPLY_IDS = new Set([
+  'spray-bottle',
+  'glass-cleaner',
+  'disinfectant-spray',
+  'degreaser',
+  'oven-cleaner',
+])
+
+function DefaultPhoto({ supply }: { supply: Supply }) {
+  const src = SUPPLY_DEFAULT_PHOTOS[supply.id]
+  if (src === undefined) return null
+  return <img src={src} alt={supply.name} className="supply-card__default-photo" />
+}
 
 function SupplyCard({
   supply,
@@ -14,10 +31,17 @@ function SupplyCard({
   onToggleTask: (task: Task) => void
 }) {
   const [isOpen, setIsOpen] = useState(false)
+  const isUploadable = UPLOADABLE_SUPPLY_IDS.has(supply.id)
 
   return (
     <div className="supply-card" role="group" aria-label={supply.name}>
-      <ItemPhoto itemId={supply.id} itemName={supply.name} />
+      {isUploadable ? (
+        <ItemPhoto itemId={supply.id} itemName={supply.name} defaultIcon={<DefaultPhoto supply={supply} />} />
+      ) : (
+        <span className="supply-card__icon">
+          <DefaultPhoto supply={supply} />
+        </span>
+      )}
       <h3 className="supply-card__name">{supply.name}</h3>
       <button type="button" className="supply-card__toggle" onClick={() => setIsOpen((open) => !open)}>
         Used for {isOpen ? '▲' : '▼'}

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { usePhotoStorage } from '../storage/usePhotoStorage'
+import { SUPPLY_DEFAULT_PHOTOS } from '../data/supplyDefaultPhotos'
 
 // Read-only display of a supply's photo. Uploading only happens on the
 // Supplies catalog page (Settings) — everywhere else just shows the result.
@@ -28,9 +29,17 @@ export function SupplyThumbnail({ supplyId, supplyName }: { supplyId: string; su
   }, [storage, supplyId])
 
   if (photoUrl === null) {
+    const defaultPhoto = SUPPLY_DEFAULT_PHOTOS[supplyId]
+    if (defaultPhoto === undefined) {
+      return (
+        <span className="supply-thumbnail supply-thumbnail--placeholder" aria-label={supplyName}>
+          🧴
+        </span>
+      )
+    }
     return (
-      <span className="supply-thumbnail supply-thumbnail--placeholder" aria-label={supplyName}>
-        🧴
+      <span className="supply-thumbnail">
+        <img src={defaultPhoto} alt={supplyName} className="supply-thumbnail__image" />
       </span>
     )
   }

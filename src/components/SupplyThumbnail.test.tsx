@@ -16,16 +16,27 @@ afterEach(() => {
 })
 
 describe('SupplyThumbnail', () => {
-  it('shows a neutral placeholder when no photo has been uploaded yet', async () => {
+  it('shows the default photo when no photo has been uploaded yet', async () => {
     render(
       <PhotoStorageProvider storage={createFakePhotoStorage()}>
         <SupplyThumbnail supplyId="mop" supplyName="Mop" />
       </PhotoStorageProvider>,
     )
 
-    expect(await screen.findByLabelText('Mop')).toBeInTheDocument()
+    const image = await screen.findByRole('img', { name: 'Mop' })
+    expect(image).toHaveAttribute('src', '/supplies/defaults/mop.png')
     expect(screen.queryByRole('button', { name: /add a photo/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+  })
+
+  it('falls back to a generic placeholder for a supply with no default photo', async () => {
+    render(
+      <PhotoStorageProvider storage={createFakePhotoStorage()}>
+        <SupplyThumbnail supplyId="unknown-supply" supplyName="Mystery item" />
+      </PhotoStorageProvider>,
+    )
+
+    const placeholder = await screen.findByLabelText('Mystery item')
+    expect(placeholder).toHaveTextContent('🧴')
   })
 
   it('shows the uploaded photo when one exists', async () => {
