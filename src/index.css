@@ -705,6 +705,17 @@ a[class]:active,
   cursor: pointer;
 }
 
+.spotify-player {
+  margin: 32px auto 0;
+  max-width: 400px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.spotify-player iframe {
+  display: block;
+}
+
 /* Run result */
 
 .run-result {
@@ -1196,7 +1207,8 @@ a[class]:active,
 }
 
 .settings__field input[type='time'],
-.settings__field input[type='number'] {
+.settings__field input[type='number'],
+.settings__field input[type='url'] {
   display: block;
   margin-top: 8px;
   min-height: 44px;
@@ -1208,6 +1220,11 @@ a[class]:active,
   font-family: inherit;
   font-size: 16px;
   width: 140px;
+}
+
+.settings__field input[type='url'] {
+  width: 100%;
+  max-width: 360px;
 }
 
 .settings__hint {

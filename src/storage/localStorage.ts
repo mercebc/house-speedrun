@@ -94,7 +94,7 @@ export function createLocalStorageService(): StorageService {
         write(KEYS.settings, DEFAULT_SETTINGS)
         return DEFAULT_SETTINGS
       }
-      return JSON.parse(raw) as Settings
+      return { ...DEFAULT_SETTINGS, ...(JSON.parse(raw) as Settings) }
     },
 
     async saveSettings(settings: Settings): Promise<void> {

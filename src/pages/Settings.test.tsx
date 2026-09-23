@@ -139,4 +139,27 @@ describe('Settings page', () => {
     const saved = await storage.getSettings()
     expect(saved.showEstimates).toBe(false)
   })
+
+  it('shows the current Spotify playlist link', async () => {
+    renderSettings(
+      createFakeStorage({
+        settings: { ...DEFAULT_SETTINGS, spotifyPlaylistUrl: 'https://open.spotify.com/playlist/abc123' },
+      }),
+    )
+
+    expect(await screen.findByLabelText(/spotify playlist link/i)).toHaveValue(
+      'https://open.spotify.com/playlist/abc123',
+    )
+  })
+
+  it('saves a changed Spotify playlist link', async () => {
+    const user = userEvent.setup()
+    const storage = renderSettings()
+    await screen.findByLabelText(/spotify playlist link/i)
+
+    await user.type(screen.getByLabelText(/spotify playlist link/i), 'https://open.spotify.com/playlist/xyz789')
+
+    const saved = await storage.getSettings()
+    expect(saved.spotifyPlaylistUrl).toBe('https://open.spotify.com/playlist/xyz789')
+  })
 })

@@ -5,6 +5,7 @@ import { TimerPage } from './TimerPage'
 import { StorageProvider } from '../storage/StorageProvider'
 import { createFakeStorage } from '../test/fakeStorage'
 import { TestSettingsProvider } from '../test/TestSettingsProvider'
+import { DEFAULT_SETTINGS } from '../storage/storage'
 import type { Task } from '../domain/tasks/task.types'
 
 const task: Task = {
@@ -20,11 +21,11 @@ const task: Task = {
   supplyIds: [],
 }
 
-function renderAt(taskId: string, storage = createFakeStorage({ tasks: [task] })) {
+function renderAt(taskId: string, storage = createFakeStorage({ tasks: [task] }), settings = DEFAULT_SETTINGS) {
   render(
     <MemoryRouter initialEntries={[`/tasks/${taskId}/timer`]}>
       <StorageProvider storage={storage}>
-        <TestSettingsProvider>
+        <TestSettingsProvider settings={settings}>
           <Routes>
             <Route path="/tasks/:taskId/timer" element={<TimerPage />} />
           </Routes>
@@ -143,5 +144,37 @@ describe('TimerPage', () => {
     await flush()
 
     expect(screen.getByText(/task not found/i)).toBeInTheDocument()
+  })
+
+  it('shows a Spotify player once the timer is running when a playlist is configured', async () => {
+    renderAt('clean-oven', undefined, {
+      ...DEFAULT_SETTINGS,
+      spotifyPlaylistUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M',
+    })
+    await flush()
+
+    expect(screen.getByTitle(/spotify player/i)).toBeInTheDocument()
+  })
+
+  it('shows no Spotify player when no playlist is configured', async () => {
+    renderAt('clean-oven')
+    await flush()
+
+    expect(screen.queryByTitle(/spotify player/i)).not.toBeInTheDocument()
+  })
+
+  it('does not show the Spotify player during the resume prompt', async () => {
+    const storage = createFakeStorage({
+      tasks: [task],
+      activeRun: { taskId: 'clean-oven', startedAt: '2026-09-22T08:53:00.000Z' },
+    })
+    renderAt('clean-oven', storage, {
+      ...DEFAULT_SETTINGS,
+      spotifyPlaylistUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M',
+    })
+    await flush()
+
+    expect(screen.getByText(/active run/i)).toBeInTheDocument()
+    expect(screen.queryByTitle(/spotify player/i)).not.toBeInTheDocument()
   })
 })

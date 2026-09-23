@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Timer } from '../components/Timer'
 import { MissionStepResult } from '../components/MissionStepResult'
+import { SpotifyPlayer } from '../components/SpotifyPlayer'
 import { finishRun } from '../domain/runs/run.service'
 import type { ActiveMission } from '../domain/missions/mission.types'
 import type { Task } from '../domain/tasks/task.types'
@@ -167,6 +168,7 @@ export function MissionRunner() {
         showEstimate={settings.showEstimates}
         onFinish={handleFinish}
       />
+      <SpotifyPlayer playlistUrl={settings.spotifyPlaylistUrl} />
     </section>
   )
 }

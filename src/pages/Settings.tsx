@@ -13,6 +13,7 @@ function SettingsForm({
 }) {
   const [timeInput, setTimeInput] = useState(settings.morningNotificationTime)
   const [thresholdInput, setThresholdInput] = useState(String(settings.superOverdueDays))
+  const [playlistInput, setPlaylistInput] = useState(settings.spotifyPlaylistUrl)
 
   async function handleMorningReminderToggle(enabled: boolean) {
     if (enabled) {
@@ -31,6 +32,11 @@ function SettingsForm({
     const days = Number.parseInt(raw, 10)
     if (Number.isNaN(days)) return
     updateSettings({ ...settings, superOverdueDays: days })
+  }
+
+  function handlePlaylistChange(url: string) {
+    setPlaylistInput(url)
+    updateSettings({ ...settings, spotifyPlaylistUrl: url })
   }
 
   return (
@@ -105,6 +111,18 @@ function SettingsForm({
           Show estimated durations
         </label>
         <p className="settings__hint">Display estimated durations on tasks and the timer.</p>
+      </div>
+
+      <div className="settings__field">
+        <label htmlFor="spotify-playlist-url">Spotify playlist link</label>
+        <input
+          id="spotify-playlist-url"
+          type="url"
+          placeholder="https://open.spotify.com/playlist/..."
+          value={playlistInput}
+          onChange={(event) => handlePlaylistChange(event.target.value)}
+        />
+        <p className="settings__hint">Paste a playlist, album, or track link. A play button shows up once you start a timer.</p>
       </div>
 
       <div className="settings__field">

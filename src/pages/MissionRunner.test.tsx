@@ -5,6 +5,7 @@ import { MissionRunner } from './MissionRunner'
 import { StorageProvider } from '../storage/StorageProvider'
 import { createFakeStorage } from '../test/fakeStorage'
 import { TestSettingsProvider } from '../test/TestSettingsProvider'
+import { DEFAULT_SETTINGS } from '../storage/storage'
 import type { Task } from '../domain/tasks/task.types'
 import type { ActiveMission } from '../domain/missions/mission.types'
 
@@ -27,12 +28,16 @@ function buildTask(overrides: Partial<Task> = {}): Task {
 const kitchenCounters = buildTask({ id: 'kitchen-counters', name: 'Kitchen counters', estimatedSeconds: 420 })
 const kitchenSink = buildTask({ id: 'kitchen-sink', name: 'Kitchen sink', estimatedSeconds: 300 })
 
-function renderRunner(tasks: Task[], activeMission: ActiveMission | null) {
+function renderRunner(
+  tasks: Task[],
+  activeMission: ActiveMission | null,
+  settings = DEFAULT_SETTINGS,
+) {
   const storage = createFakeStorage({ tasks, activeMission })
   render(
     <MemoryRouter initialEntries={['/missions/run']}>
       <StorageProvider storage={storage}>
-        <TestSettingsProvider>
+        <TestSettingsProvider settings={settings}>
           <Routes>
             <Route path="/missions/run" element={<MissionRunner />} />
             <Route path="/tasks" element={<p>tasks page</p>} />
@@ -144,5 +149,27 @@ describe('MissionRunner', () => {
     fireEvent.click(screen.getByRole('button', { name: /done/i }))
 
     expect(screen.getByText('tasks page')).toBeInTheDocument()
+  })
+
+  it('shows a Spotify player while a mission step is running when a playlist is configured', async () => {
+    renderRunner(
+      [kitchenCounters, kitchenSink],
+      { taskIds: ['kitchen-counters', 'kitchen-sink'], availableSeconds: 1200, currentIndex: 0 },
+      { ...DEFAULT_SETTINGS, spotifyPlaylistUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M' },
+    )
+    await flush()
+
+    expect(screen.getByTitle(/spotify player/i)).toBeInTheDocument()
+  })
+
+  it('shows no Spotify player when no playlist is configured', async () => {
+    renderRunner([kitchenCounters, kitchenSink], {
+      taskIds: ['kitchen-counters', 'kitchen-sink'],
+      availableSeconds: 1200,
+      currentIndex: 0,
+    })
+    await flush()
+
+    expect(screen.queryByTitle(/spotify player/i)).not.toBeInTheDocument()
   })
 })

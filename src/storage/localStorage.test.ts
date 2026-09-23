@@ -196,6 +196,17 @@ describe('localStorage StorageService', () => {
 
       expect(result).toEqual(settings)
     })
+
+    it('backfills fields added after settings were first saved, instead of leaving them undefined', async () => {
+      const storage = createLocalStorageService()
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { spotifyPlaylistUrl: _omitted, ...settingsFromAnOlderVersion } = DEFAULT_SETTINGS
+      localStorage.setItem('house-speedrun:settings', JSON.stringify(settingsFromAnOlderVersion))
+
+      const result = await storage.getSettings()
+
+      expect(result).toEqual(DEFAULT_SETTINGS)
+    })
   })
 
   describe('last morning notification date', () => {

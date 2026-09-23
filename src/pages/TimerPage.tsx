@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Timer } from '../components/Timer'
 import { RunResult } from '../components/RunResult'
+import { SpotifyPlayer } from '../components/SpotifyPlayer'
 import { finishRun } from '../domain/runs/run.service'
 import type { CleaningRun } from '../domain/runs/run.types'
 import type { Task } from '../domain/tasks/task.types'
@@ -124,13 +125,16 @@ export function TimerPage() {
   }
 
   return (
-    <Timer
-      taskName={task.name}
-      elapsedSeconds={elapsedSeconds}
-      personalBestSeconds={task.personalBestSeconds}
-      estimatedSeconds={task.estimatedSeconds}
-      showEstimate={settings.showEstimates}
-      onFinish={handleFinish}
-    />
+    <>
+      <Timer
+        taskName={task.name}
+        elapsedSeconds={elapsedSeconds}
+        personalBestSeconds={task.personalBestSeconds}
+        estimatedSeconds={task.estimatedSeconds}
+        showEstimate={settings.showEstimates}
+        onFinish={handleFinish}
+      />
+      <SpotifyPlayer playlistUrl={settings.spotifyPlaylistUrl} />
+    </>
   )
 }

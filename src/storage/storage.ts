@@ -10,6 +10,7 @@ export interface Settings {
   showEstimates: boolean
   vibrationEnabled: boolean
   soundEnabled: boolean
+  spotifyPlaylistUrl: string
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -19,6 +20,7 @@ export const DEFAULT_SETTINGS: Settings = {
   showEstimates: true,
   vibrationEnabled: true,
   soundEnabled: false,
+  spotifyPlaylistUrl: '',
 }
 
 export interface StorageService {
