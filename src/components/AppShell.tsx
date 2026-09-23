@@ -7,7 +7,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="app-shell">
       <header className="app-shell__header">
         <span className="app-shell__title">House Speedrun</span>
-        <Link to="/settings" aria-label="Settings">
+        <Link to="/settings" aria-label="Settings" className="app-shell__settings-link">
           ⚙
         </Link>
       </header>
