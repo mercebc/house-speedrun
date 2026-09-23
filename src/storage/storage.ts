@@ -1,6 +1,7 @@
 import type { Room, Task } from '../domain/tasks/task.types'
 import type { ActiveRun, CleaningRun } from '../domain/runs/run.types'
 import type { ActiveMission } from '../domain/missions/mission.types'
+import type { Supply } from '../domain/supplies/supply.types'
 
 export interface Settings {
   superOverdueDays: number
@@ -34,6 +35,8 @@ export interface StorageService {
   saveActiveMission(activeMission: ActiveMission | null): Promise<void>
 
   getRooms(): Promise<Room[]>
+
+  getSupplies(): Promise<Supply[]>
 
   getSettings(): Promise<Settings>
   saveSettings(settings: Settings): Promise<void>

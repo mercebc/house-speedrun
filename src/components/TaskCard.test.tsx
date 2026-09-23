@@ -7,6 +7,7 @@ import { PhotoStorageProvider } from '../storage/PhotoStorageProvider'
 import { createFakePhotoStorage } from '../test/fakePhotoStorage'
 import { TestSettingsProvider } from '../test/TestSettingsProvider'
 import type { Room, Task } from '../domain/tasks/task.types'
+import type { Supply } from '../domain/supplies/supply.types'
 
 const kitchen: Room = { id: 'kitchen', name: 'Kitchen', icon: '🍳', sortOrder: 1 }
 
@@ -21,6 +22,7 @@ function buildTask(overrides: Partial<Task> = {}): Task {
     lastCompletedAt: '2026-09-21T08:00:00.000Z',
     createdAt: '2026-01-01T00:00:00.000Z',
     active: true,
+    supplyIds: [],
     ...overrides,
   }
 }
@@ -29,12 +31,13 @@ function renderCard(
   task: Task,
   now = new Date('2026-09-22T12:00:00.000Z'),
   onLogCompletion: () => void = () => {},
+  supplies: Supply[] = [],
 ) {
   render(
     <MemoryRouter>
       <TestSettingsProvider>
         <PhotoStorageProvider storage={createFakePhotoStorage()}>
-          <TaskCard task={task} room={kitchen} now={now} onLogCompletion={onLogCompletion} />
+          <TaskCard task={task} room={kitchen} supplies={supplies} now={now} onLogCompletion={onLogCompletion} />
         </PhotoStorageProvider>
       </TestSettingsProvider>
     </MemoryRouter>,
@@ -103,5 +106,21 @@ describe('TaskCard', () => {
       'href',
       '/tasks/kitchen-counters',
     )
+  })
+
+  it('shows the supplies collage for this task', async () => {
+    renderCard(buildTask({ supplyIds: ['mop', 'bucket'] }), undefined, undefined, [
+      { id: 'mop', name: 'Mop' },
+      { id: 'bucket', name: 'Bucket' },
+    ])
+
+    expect(await screen.findByText('Mop')).toBeInTheDocument()
+    expect(screen.getByText('Bucket')).toBeInTheDocument()
+  })
+
+  it('does not show a supplies section when the task needs none', () => {
+    renderCard(buildTask({ supplyIds: [] }), undefined, undefined, [])
+
+    expect(screen.queryByText(/no supplies/i)).not.toBeInTheDocument()
   })
 })

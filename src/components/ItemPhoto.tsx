@@ -2,7 +2,9 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { usePhotoStorage } from '../storage/usePhotoStorage'
 import { resizeImage } from '../utils/image'
 
-export function TaskPhoto({ taskId, taskName }: { taskId: string; taskName: string }) {
+// A small upload-or-display photo control keyed by an arbitrary item id —
+// used for both task photos and supply-catalog product photos.
+export function ItemPhoto({ itemId, itemName }: { itemId: string; itemName: string }) {
   const storage = usePhotoStorage()
   const inputId = useId()
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
@@ -11,7 +13,7 @@ export function TaskPhoto({ taskId, taskName }: { taskId: string; taskName: stri
   useEffect(() => {
     let cancelled = false
 
-    storage.getPhoto(taskId).then((photo) => {
+    storage.getPhoto(itemId).then((photo) => {
       if (cancelled || photo === null) return
       const url = URL.createObjectURL(photo)
       objectUrlRef.current = url
@@ -25,7 +27,7 @@ export function TaskPhoto({ taskId, taskName }: { taskId: string; taskName: stri
         objectUrlRef.current = null
       }
     }
-  }, [storage, taskId])
+  }, [storage, itemId])
 
   async function handleFileSelected(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
@@ -33,7 +35,7 @@ export function TaskPhoto({ taskId, taskName }: { taskId: string; taskName: stri
     if (file === undefined) return
 
     const resized = await resizeImage(file)
-    await storage.savePhoto(taskId, resized)
+    await storage.savePhoto(itemId, resized)
 
     if (objectUrlRef.current !== null) URL.revokeObjectURL(objectUrlRef.current)
     const url = URL.createObjectURL(resized)
@@ -42,15 +44,15 @@ export function TaskPhoto({ taskId, taskName }: { taskId: string; taskName: stri
   }
 
   return (
-    <div className="task-photo">
+    <div className="item-photo">
       {photoUrl === null ? (
-        <label htmlFor={inputId} className="task-photo__placeholder" role="button">
+        <label htmlFor={inputId} className="item-photo__placeholder" role="button">
           <span aria-hidden="true">📷</span>
           <span>Add a photo</span>
         </label>
       ) : (
-        <label htmlFor={inputId} className="task-photo__image-wrapper">
-          <img src={photoUrl} alt={taskName} className="task-photo__image" />
+        <label htmlFor={inputId} className="item-photo__image-wrapper">
+          <img src={photoUrl} alt={itemName} className="item-photo__image" />
         </label>
       )}
       <input
@@ -59,7 +61,7 @@ export function TaskPhoto({ taskId, taskName }: { taskId: string; taskName: stri
         accept="image/*"
         capture="environment"
         aria-label="Add a photo"
-        className="task-photo__input"
+        className="item-photo__input"
         onChange={handleFileSelected}
       />
     </div>

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { TaskPhoto } from './TaskPhoto'
+import { ItemPhoto } from './ItemPhoto'
 import { PhotoStorageProvider } from '../storage/PhotoStorageProvider'
 import type { PhotoStorageService } from '../storage/photoStorage'
 
@@ -15,7 +15,7 @@ function createFakePhotoStorage(initial?: Blob): PhotoStorageService {
     async getPhoto() {
       return photo
     },
-    async savePhoto(_taskId, next) {
+    async savePhoto(_itemId, next) {
       photo = next
     },
     async deletePhoto() {
@@ -38,23 +38,23 @@ afterEach(() => {
   vi.clearAllMocks()
 })
 
-function renderTaskPhoto(storage: PhotoStorageService) {
+function renderItemPhoto(storage: PhotoStorageService) {
   render(
     <PhotoStorageProvider storage={storage}>
-      <TaskPhoto taskId="clean-oven" taskName="Clean oven" />
+      <ItemPhoto itemId="clean-oven" itemName="Clean oven" />
     </PhotoStorageProvider>,
   )
 }
 
-describe('TaskPhoto', () => {
+describe('ItemPhoto', () => {
   it('shows an upload prompt when there is no photo yet', async () => {
-    renderTaskPhoto(createFakePhotoStorage())
+    renderItemPhoto(createFakePhotoStorage())
 
     expect(await screen.findByRole('button', { name: /add a photo/i })).toBeInTheDocument()
   })
 
   it('shows the existing photo when one is saved', async () => {
-    renderTaskPhoto(createFakePhotoStorage(new Blob(['bytes'], { type: 'image/jpeg' })))
+    renderItemPhoto(createFakePhotoStorage(new Blob(['bytes'], { type: 'image/jpeg' })))
 
     const image = await screen.findByRole('img', { name: 'Clean oven' })
     expect(image).toHaveAttribute('src', 'blob:fake-url')
@@ -63,7 +63,7 @@ describe('TaskPhoto', () => {
   it('uploads and displays a new photo when a file is selected', async () => {
     const storage = createFakePhotoStorage()
     const user = userEvent.setup()
-    renderTaskPhoto(storage)
+    renderItemPhoto(storage)
     await screen.findByRole('button', { name: /add a photo/i })
 
     const file = new File(['bytes'], 'oven.jpg', { type: 'image/jpeg' })

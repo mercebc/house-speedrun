@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { requestNotificationPermission } from '../notifications/notifications'
 import { useSettings } from '../storage/useSettings'
 import type { Settings as SettingsModel } from '../storage/storage'
@@ -68,6 +69,13 @@ function SettingsForm({
           onChange={(event) => handleThresholdChange(event.target.value)}
         />
         <span> days</span>
+      </div>
+
+      <div className="settings__field">
+        <Link to="/supplies" className="settings__link">
+          Cleaning supplies catalogue →
+        </Link>
+        <p className="settings__hint">Upload a photo for each product or tool, and say which tasks use it.</p>
       </div>
     </>
   )

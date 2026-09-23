@@ -4,9 +4,12 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { Missions } from './Missions'
 import { StorageProvider } from '../storage/StorageProvider'
+import { PhotoStorageProvider } from '../storage/PhotoStorageProvider'
 import { createFakeStorage } from '../test/fakeStorage'
+import { createFakePhotoStorage } from '../test/fakePhotoStorage'
 import { TestSettingsProvider } from '../test/TestSettingsProvider'
 import type { Task } from '../domain/tasks/task.types'
+import type { Supply } from '../domain/supplies/supply.types'
 
 const now = new Date('2026-09-22T09:00:00.000Z')
 
@@ -21,20 +24,23 @@ function buildTask(overrides: Partial<Task> = {}): Task {
     lastCompletedAt: null,
     createdAt: '2026-01-01T00:00:00.000Z',
     active: true,
+    supplyIds: [],
     ...overrides,
   }
 }
 
-function renderMissions(tasks: Task[]) {
-  const storage = createFakeStorage({ tasks })
+function renderMissions(tasks: Task[], supplies: Supply[] = []) {
+  const storage = createFakeStorage({ tasks, supplies })
   render(
     <MemoryRouter initialEntries={['/missions']}>
       <StorageProvider storage={storage}>
         <TestSettingsProvider>
-          <Routes>
-            <Route path="/missions" element={<Missions now={now} />} />
-            <Route path="/missions/run" element={<p>mission runner</p>} />
-          </Routes>
+          <PhotoStorageProvider storage={createFakePhotoStorage()}>
+            <Routes>
+              <Route path="/missions" element={<Missions now={now} />} />
+              <Route path="/missions/run" element={<p>mission runner</p>} />
+            </Routes>
+          </PhotoStorageProvider>
         </TestSettingsProvider>
       </StorageProvider>
     </MemoryRouter>,
@@ -74,5 +80,26 @@ describe('Missions page', () => {
       availableSeconds: 1200,
       currentIndex: 0,
     })
+  })
+
+  it('combines supplies across every task in the mission into one gather list', async () => {
+    const user = userEvent.setup()
+    renderMissions(
+      [
+        buildTask({ id: 'a', name: 'Mop floors', estimatedSeconds: 420, supplyIds: ['mop', 'bucket'] }),
+        buildTask({ id: 'b', name: 'Dust living room', estimatedSeconds: 420, supplyIds: ['duster'] }),
+      ],
+      [
+        { id: 'mop', name: 'Mop' },
+        { id: 'bucket', name: 'Bucket' },
+        { id: 'duster', name: 'Duster' },
+      ],
+    )
+
+    await user.click(screen.getByRole('button', { name: '20 min' }))
+
+    expect(await screen.findByText('Mop')).toBeInTheDocument()
+    expect(screen.getByText('Bucket')).toBeInTheDocument()
+    expect(screen.getByText('Duster')).toBeInTheDocument()
   })
 })

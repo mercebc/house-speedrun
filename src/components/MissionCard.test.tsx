@@ -2,8 +2,11 @@ import { describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MissionCard } from './MissionCard'
+import { PhotoStorageProvider } from '../storage/PhotoStorageProvider'
+import { createFakePhotoStorage } from '../test/fakePhotoStorage'
 import type { Mission } from '../domain/missions/mission.types'
 import type { Task } from '../domain/tasks/task.types'
+import type { Supply } from '../domain/supplies/supply.types'
 
 function buildTask(overrides: Partial<Task> = {}): Task {
   return {
@@ -16,8 +19,22 @@ function buildTask(overrides: Partial<Task> = {}): Task {
     lastCompletedAt: null,
     createdAt: '2026-01-01T00:00:00.000Z',
     active: true,
+    supplyIds: [],
     ...overrides,
   }
+}
+
+function renderCard(mission: Mission, options: { minutes?: number; onStart?: () => void; supplies?: Supply[] } = {}) {
+  render(
+    <PhotoStorageProvider storage={createFakePhotoStorage()}>
+      <MissionCard
+        mission={mission}
+        minutes={options.minutes ?? 20}
+        onStart={options.onStart ?? (() => {})}
+        supplies={options.supplies ?? []}
+      />
+    </PhotoStorageProvider>,
+  )
 }
 
 describe('MissionCard', () => {
@@ -28,7 +45,7 @@ describe('MissionCard', () => {
       totalSeconds: 420,
       hadEligibleTasks: true,
     }
-    render(<MissionCard mission={mission} minutes={20} onStart={() => {}} />)
+    renderCard(mission)
 
     expect(screen.getByText(/20 minute mission/i)).toBeInTheDocument()
     expect(screen.getByText(/you have 20 minutes/i)).toBeInTheDocument()
@@ -44,7 +61,7 @@ describe('MissionCard', () => {
       totalSeconds: 720,
       hadEligibleTasks: true,
     }
-    render(<MissionCard mission={mission} minutes={20} onStart={() => {}} />)
+    renderCard(mission)
 
     expect(screen.getByText('Kitchen counters')).toBeInTheDocument()
     expect(screen.getByText('07:00')).toBeInTheDocument()
@@ -59,7 +76,7 @@ describe('MissionCard', () => {
       totalSeconds: 720,
       hadEligibleTasks: true,
     }
-    render(<MissionCard mission={mission} minutes={20} onStart={() => {}} />)
+    renderCard(mission)
 
     expect(screen.getByText('12:00')).toBeInTheDocument()
   })
@@ -73,7 +90,7 @@ describe('MissionCard', () => {
       totalSeconds: 420,
       hadEligibleTasks: true,
     }
-    render(<MissionCard mission={mission} minutes={20} onStart={onStart} />)
+    renderCard(mission, { onStart })
 
     await user.click(screen.getByRole('button', { name: /start mission/i }))
 
@@ -82,7 +99,7 @@ describe('MissionCard', () => {
 
   it('shows "No suitable jobs found" when nothing is due, with no start button', () => {
     const mission: Mission = { items: [], availableSeconds: 1200, totalSeconds: 0, hadEligibleTasks: false }
-    render(<MissionCard mission={mission} minutes={20} onStart={() => {}} />)
+    renderCard(mission)
 
     expect(screen.getByText(/no suitable jobs found/i)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /start mission/i })).not.toBeInTheDocument()
@@ -90,10 +107,30 @@ describe('MissionCard', () => {
 
   it('shows "Nothing fits" when eligible jobs exist but none fit the time, with no start button', () => {
     const mission: Mission = { items: [], availableSeconds: 60, totalSeconds: 0, hadEligibleTasks: true }
-    render(<MissionCard mission={mission} minutes={1} onStart={() => {}} />)
+    renderCard(mission, { minutes: 1 })
 
     expect(screen.getByText(/nothing fits/i)).toBeInTheDocument()
     expect(screen.getByText(/try 10 more minutes/i)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /start mission/i })).not.toBeInTheDocument()
+  })
+
+  it('shows the combined supplies to gather for the whole mission', async () => {
+    const mission: Mission = {
+      items: [buildTask({ supplyIds: ['mop'] }), buildTask({ id: 'b', supplyIds: ['bucket'] })],
+      availableSeconds: 1200,
+      totalSeconds: 720,
+      hadEligibleTasks: true,
+    }
+    renderCard(mission, { supplies: [{ id: 'mop', name: 'Mop' }, { id: 'bucket', name: 'Bucket' }] })
+
+    expect(await screen.findByText('Mop')).toBeInTheDocument()
+    expect(screen.getByText('Bucket')).toBeInTheDocument()
+  })
+
+  it('does not show a gather section for an empty mission', () => {
+    const mission: Mission = { items: [], availableSeconds: 1200, totalSeconds: 0, hadEligibleTasks: false }
+    renderCard(mission)
+
+    expect(screen.queryByText(/gather/i)).not.toBeInTheDocument()
   })
 })

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { Settings } from './Settings'
 import { StorageProvider } from '../storage/StorageProvider'
 import { SettingsProvider } from '../storage/SettingsProvider'
@@ -15,11 +16,13 @@ vi.mock('../notifications/notifications', async (importOriginal) => {
 
 function renderSettings(storage = createFakeStorage()) {
   render(
-    <StorageProvider storage={storage}>
-      <SettingsProvider>
-        <Settings />
-      </SettingsProvider>
-    </StorageProvider>,
+    <MemoryRouter>
+      <StorageProvider storage={storage}>
+        <SettingsProvider>
+          <Settings />
+        </SettingsProvider>
+      </StorageProvider>
+    </MemoryRouter>,
   )
   return storage
 }
@@ -84,5 +87,11 @@ describe('Settings page', () => {
 
     const saved = await storage.getSettings()
     expect(saved.superOverdueDays).toBe(10)
+  })
+
+  it('links to the cleaning supplies catalogue', async () => {
+    renderSettings()
+
+    expect(await screen.findByRole('link', { name: /cleaning supplies/i })).toHaveAttribute('href', '/supplies')
   })
 })

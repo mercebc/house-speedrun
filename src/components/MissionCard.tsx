@@ -1,13 +1,17 @@
 import type { Mission } from '../domain/missions/mission.types'
+import type { Supply } from '../domain/supplies/supply.types'
 import { formatDuration } from '../utils/duration'
+import { SuppliesCollage } from './SuppliesCollage'
 
 export function MissionCard({
   mission,
   minutes,
+  supplies,
   onStart,
 }: {
   mission: Mission
   minutes: number
+  supplies: Supply[]
   onStart: () => void
 }) {
   if (mission.items.length === 0) {
@@ -41,6 +45,13 @@ export function MissionCard({
           </li>
         ))}
       </ol>
+
+      {supplies.length > 0 && (
+        <div className="mission-card__gather">
+          <h3>Gather</h3>
+          <SuppliesCollage supplies={supplies} />
+        </div>
+      )}
 
       <div className="mission-card__total">
         <span>Total</span>

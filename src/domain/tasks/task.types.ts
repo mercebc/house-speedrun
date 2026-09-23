@@ -15,6 +15,8 @@ export interface Task {
   lastCompletedAt: string | null
   createdAt: string
   active: boolean
+  // Cleaning products/tools this task needs — see src/data/seedSupplies.ts.
+  supplyIds: string[]
 }
 
 export type TaskStatus =

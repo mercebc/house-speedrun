@@ -1,8 +1,10 @@
 import type { Room, Task } from '../domain/tasks/task.types'
 import type { ActiveRun, CleaningRun } from '../domain/runs/run.types'
 import type { ActiveMission } from '../domain/missions/mission.types'
+import type { Supply } from '../domain/supplies/supply.types'
 import { seedRooms } from '../data/seedRooms'
 import { seedTasks } from '../data/seedTasks'
+import { seedSupplies } from '../data/seedSupplies'
 import { DEFAULT_SETTINGS, type Settings, type StorageService } from './storage'
 
 const KEYS = {
@@ -80,6 +82,10 @@ export function createLocalStorageService(): StorageService {
 
     async getRooms(): Promise<Room[]> {
       return seedRooms
+    },
+
+    async getSupplies(): Promise<Supply[]> {
+      return seedSupplies
     },
 
     async getSettings(): Promise<Settings> {

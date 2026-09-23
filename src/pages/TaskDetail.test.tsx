@@ -9,10 +9,15 @@ import { createFakeStorage } from '../test/fakeStorage'
 import { createFakePhotoStorage } from '../test/fakePhotoStorage'
 import { TestSettingsProvider } from '../test/TestSettingsProvider'
 import type { Room, Task } from '../domain/tasks/task.types'
+import type { Supply } from '../domain/supplies/supply.types'
 
 const now = new Date('2026-09-22T12:00:00.000Z')
 
 const kitchen: Room = { id: 'kitchen', name: 'Kitchen', icon: '🍳', sortOrder: 1 }
+const supplies: Supply[] = [
+  { id: 'oven-cleaner', name: 'Oven cleaner' },
+  { id: 'rubber-gloves', name: 'Rubber gloves' },
+]
 
 const task: Task = {
   id: 'clean-oven',
@@ -24,10 +29,11 @@ const task: Task = {
   lastCompletedAt: '2026-08-01T00:00:00.000Z',
   createdAt: '2026-01-01T00:00:00.000Z',
   active: true,
+  supplyIds: ['oven-cleaner', 'rubber-gloves'],
 }
 
 function renderAt(taskId: string, tasks: Task[] = [task]) {
-  const storage = createFakeStorage({ tasks, rooms: [kitchen] })
+  const storage = createFakeStorage({ tasks, rooms: [kitchen], supplies })
   render(
     <MemoryRouter initialEntries={[`/tasks/${taskId}`]}>
       <StorageProvider storage={storage}>
@@ -73,10 +79,17 @@ describe('TaskDetail', () => {
     expect(await screen.findByText(/overdue/i)).toBeInTheDocument()
   })
 
-  it('offers a photo upload area', async () => {
+  it('shows the supplies needed for this task', async () => {
     renderAt('clean-oven')
 
-    expect(await screen.findByRole('button', { name: /add a photo/i })).toBeInTheDocument()
+    expect(await screen.findByText('Oven cleaner')).toBeInTheDocument()
+    expect(screen.getByText('Rubber gloves')).toBeInTheDocument()
+  })
+
+  it('shows a note when the task needs no supplies', async () => {
+    renderAt('clean-oven', [{ ...task, supplyIds: [] }])
+
+    expect(await screen.findByText(/no supplies/i)).toBeInTheDocument()
   })
 
   it('links to the timer', async () => {

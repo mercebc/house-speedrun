@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildMission } from './mission.builder'
+import { buildMission, getCombinedSupplyIds } from './mission.builder'
 import type { Task } from '../tasks/task.types'
 
 const now = new Date('2026-09-22T09:00:00.000Z')
@@ -17,6 +17,7 @@ function buildTask(overrides: Partial<Task> = {}): Task {
     lastCompletedAt: null,
     createdAt: '2026-01-01T00:00:00.000Z',
     active: true,
+    supplyIds: [],
     ...overrides,
   }
 }
@@ -145,5 +146,35 @@ describe('buildMission', () => {
     const mission = buildMission([kitchenA, bathroomA, kitchenB], 900, now)
 
     expect(mission.items.map((t) => t.id)).toEqual(['kitchen-a', 'kitchen-b', 'bathroom-a'])
+  })
+})
+
+describe('getCombinedSupplyIds', () => {
+  it('combines supplies from every task', () => {
+    const tasks = [
+      buildTask({ supplyIds: ['mop', 'bucket'] }),
+      buildTask({ supplyIds: ['microfiber-cloth'] }),
+    ]
+
+    expect(getCombinedSupplyIds(tasks)).toEqual(['mop', 'bucket', 'microfiber-cloth'])
+  })
+
+  it('de-duplicates supplies shared across tasks, keeping first-seen order', () => {
+    const tasks = [
+      buildTask({ supplyIds: ['vacuum', 'microfiber-cloth'] }),
+      buildTask({ supplyIds: ['microfiber-cloth', 'mop'] }),
+    ]
+
+    expect(getCombinedSupplyIds(tasks)).toEqual(['vacuum', 'microfiber-cloth', 'mop'])
+  })
+
+  it('returns an empty array for tasks with no supplies', () => {
+    const tasks = [buildTask({ supplyIds: [] })]
+
+    expect(getCombinedSupplyIds(tasks)).toEqual([])
+  })
+
+  it('returns an empty array for an empty task list', () => {
+    expect(getCombinedSupplyIds([])).toEqual([])
   })
 })

@@ -21,6 +21,7 @@ function buildTask(overrides: Partial<Task> = {}): Task {
     lastCompletedAt: null,
     createdAt: '2026-01-01T00:00:00.000Z',
     active: true,
+    supplyIds: [],
     ...overrides,
   }
 }

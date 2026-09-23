@@ -110,3 +110,16 @@ export function buildMission(
 
   return { items, availableSeconds, totalSeconds, hadEligibleTasks: true }
 }
+
+// The union of every supply id needed across a set of tasks (e.g. a
+// mission's task list), so the whole mission can show one "gather this"
+// collage instead of repeating supplies per task.
+export function getCombinedSupplyIds(tasks: Pick<Task, 'supplyIds'>[]): string[] {
+  const seen = new Set<string>()
+  for (const task of tasks) {
+    for (const supplyId of task.supplyIds) {
+      seen.add(supplyId)
+    }
+  }
+  return [...seen]
+}

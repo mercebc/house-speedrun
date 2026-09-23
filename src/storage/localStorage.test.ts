@@ -3,6 +3,7 @@ import { createLocalStorageService } from './localStorage'
 import { DEFAULT_SETTINGS } from './storage'
 import { seedRooms } from '../data/seedRooms'
 import { seedTasks } from '../data/seedTasks'
+import { seedSupplies } from '../data/seedSupplies'
 import type { Task } from '../domain/tasks/task.types'
 import type { ActiveRun, CleaningRun } from '../domain/runs/run.types'
 import type { ActiveMission } from '../domain/missions/mission.types'
@@ -18,6 +19,7 @@ function buildTask(overrides: Partial<Task> = {}): Task {
     lastCompletedAt: null,
     createdAt: '2026-01-01T00:00:00.000Z',
     active: true,
+    supplyIds: [],
     ...overrides,
   }
 }
@@ -163,6 +165,16 @@ describe('localStorage StorageService', () => {
       const rooms = await storage.getRooms()
 
       expect(rooms).toEqual(seedRooms)
+    })
+  })
+
+  describe('supplies', () => {
+    it('returns the seed supplies', async () => {
+      const storage = createLocalStorageService()
+
+      const supplies = await storage.getSupplies()
+
+      expect(supplies).toEqual(seedSupplies)
     })
   })
 

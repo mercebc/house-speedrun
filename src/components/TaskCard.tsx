@@ -1,20 +1,23 @@
 import { Link } from 'react-router-dom'
 import { getDaysOverdue, getTaskStatus } from '../domain/tasks/task.status'
 import type { Room, Task } from '../domain/tasks/task.types'
+import type { Supply } from '../domain/supplies/supply.types'
 import { formatFrequency, formatRelativeDate } from '../utils/dates'
 import { formatDuration } from '../utils/duration'
 import { useSettings } from '../storage/useSettings'
 import { StatusBadge } from './StatusBadge'
-import { TaskPhoto } from './TaskPhoto'
+import { SuppliesCollage } from './SuppliesCollage'
 
 export function TaskCard({
   task,
   room,
+  supplies,
   now,
   onLogCompletion,
 }: {
   task: Task
   room: Room
+  supplies: Supply[]
   now: Date
   onLogCompletion: () => void
 }) {
@@ -24,7 +27,6 @@ export function TaskCard({
 
   return (
     <article className="task-card">
-      <TaskPhoto taskId={task.id} taskName={task.name} />
       <div className="task-card__main">
         <h3 className="task-card__name">
           <Link to={`/tasks/${task.id}`}>{task.name}</Link>
@@ -34,6 +36,11 @@ export function TaskCard({
           {' · '}
           <span>{formatFrequency(task.frequencyDays)}</span>
         </p>
+        {supplies.length > 0 && (
+          <div className="task-card__supplies">
+            <SuppliesCollage supplies={supplies} />
+          </div>
+        )}
         <p className="task-card__pb">
           PB {task.personalBestSeconds === null ? '—' : formatDuration(task.personalBestSeconds)}
         </p>

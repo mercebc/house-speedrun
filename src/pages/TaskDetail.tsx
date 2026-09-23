@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { TaskPhoto } from '../components/TaskPhoto'
+import { SuppliesCollage } from '../components/SuppliesCollage'
 import { StatusBadge } from '../components/StatusBadge'
 import { LogCompletionForm } from '../components/LogCompletionForm'
 import { getDaysOverdue, getTaskStatus } from '../domain/tasks/task.status'
 import { markTaskCompleted } from '../domain/tasks/task.service'
 import type { Room, Task } from '../domain/tasks/task.types'
+import type { Supply } from '../domain/supplies/supply.types'
 import { formatFrequency, formatRelativeDate } from '../utils/dates'
 import { formatDuration } from '../utils/duration'
 import { useStorage } from '../storage/useStorage'
@@ -17,14 +18,20 @@ export function TaskDetail({ now = new Date() }: { now?: Date } = {}) {
   const { settings } = useSettings()
   const [tasks, setTasks] = useState<Task[] | null>(null)
   const [rooms, setRooms] = useState<Room[]>([])
+  const [supplies, setSupplies] = useState<Supply[]>([])
 
   useEffect(() => {
     storage.getTasks().then(setTasks)
     storage.getRooms().then(setRooms)
+    storage.getSupplies().then(setSupplies)
   }, [storage])
 
   const task = useMemo(() => tasks?.find((t) => t.id === taskId) ?? null, [tasks, taskId])
   const room = useMemo(() => rooms.find((r) => r.id === task?.roomId) ?? null, [rooms, task])
+  const taskSupplies = useMemo(
+    () => supplies.filter((supply) => task?.supplyIds.includes(supply.id)),
+    [supplies, task],
+  )
 
   async function handleLogCompletion(completedAt: Date) {
     if (task === null) return
@@ -70,8 +77,9 @@ export function TaskDetail({ now = new Date() }: { now?: Date } = {}) {
         Start timer
       </Link>
 
-      <div className="task-detail__photo">
-        <TaskPhoto taskId={task.id} taskName={task.name} />
+      <div className="task-detail__supplies">
+        <h2>What you'll need</h2>
+        <SuppliesCollage supplies={taskSupplies} />
       </div>
 
       <dl className="task-detail__stats">
