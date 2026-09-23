@@ -15,6 +15,20 @@ const FILTERS: { id: HistoryFilter; label: string }[] = [
   { id: 'all', label: 'All time' },
 ]
 
+function emptyMessage(filter: HistoryFilter, hasAnyRuns: boolean): string {
+  if (!hasAnyRuns) return 'No runs yet.'
+  switch (filter) {
+    case 'today':
+      return 'No runs today.'
+    case '7d':
+      return 'No runs in the last 7 days.'
+    case '30d':
+      return 'No runs in the last 30 days.'
+    case 'all':
+      return 'No runs yet.'
+  }
+}
+
 function startOfDay(date: Date): Date {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))
 }
@@ -89,7 +103,7 @@ export function History({ now = new Date() }: { now?: Date } = {}) {
       </div>
 
       {groups.length === 0 ? (
-        <p>No runs yet.</p>
+        <p>{emptyMessage(filter, runs.length > 0)}</p>
       ) : (
         groups.map((group) => (
           <section key={group.label} className="history-group">

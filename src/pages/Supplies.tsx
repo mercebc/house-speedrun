@@ -70,16 +70,20 @@ export function Supplies() {
         collage on the task list and in missions.
       </p>
 
-      <div className="supplies-page__list">
-        {supplies.map((supply) => (
-          <SupplyCard
-            key={supply.id}
-            supply={supply}
-            tasks={tasks}
-            onToggleTask={(task) => handleToggleTask(task, supply.id)}
-          />
-        ))}
-      </div>
+      {supplies.length === 0 ? (
+        <p>No supplies in your catalogue yet.</p>
+      ) : (
+        <div className="supplies-page__list">
+          {supplies.map((supply) => (
+            <SupplyCard
+              key={supply.id}
+              supply={supply}
+              tasks={tasks}
+              onToggleTask={(task) => handleToggleTask(task, supply.id)}
+            />
+          ))}
+        </div>
+      )}
     </section>
   )
 }

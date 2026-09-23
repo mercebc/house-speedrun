@@ -97,6 +97,20 @@ describe('History page', () => {
     expect(await screen.findByText(/no runs yet/i)).toBeInTheDocument()
   })
 
+  it('shows a filter-specific empty state rather than claiming there are no runs at all', async () => {
+    const tasks = [buildTask({ id: 'task', name: 'Old job' })]
+    const runs = [buildRun({ id: 'old', taskId: 'task', finishedAt: '2026-08-01T09:00:00.000Z' })]
+    const user = userEvent.setup()
+    renderHistory(tasks, runs)
+    await screen.findByText('Old job')
+
+    await user.click(screen.getByRole('button', { name: 'Today' }))
+
+    expect(screen.queryByText('Old job')).not.toBeInTheDocument()
+    expect(screen.getByText(/no runs today/i)).toBeInTheDocument()
+    expect(screen.queryByText(/no runs yet/i)).not.toBeInTheDocument()
+  })
+
   it('filters to the last 7 days', async () => {
     const tasks = [buildTask({ id: 'task', name: 'Recent job' }), buildTask({ id: 'task-2', name: 'Old job' })]
     const runs = [

@@ -41,6 +41,12 @@ function renderSupplies(tasks: Task[], supplies: Supply[]) {
 }
 
 describe('Supplies page', () => {
+  it('shows an empty state when the catalogue has no supplies', async () => {
+    renderSupplies([], [])
+
+    expect(await screen.findByText(/no supplies in your catalogue yet/i)).toBeInTheDocument()
+  })
+
   it('lists every supply with an upload area', async () => {
     renderSupplies([buildTask()], [mop, bucket])
 
