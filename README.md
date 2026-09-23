@@ -60,20 +60,46 @@ src/
 
 ## Status
 
-Phase 1 (Foundation) through Phase 6 (Notifications) of the MVP build
-order in SPEC.md are done — every phase except Phase 7 (Polish):
-project setup, routing, responsive layout, seed data, local
-persistence, task status/due-date calculation, the Tasks and Task
-detail screens (status/room filters, per-task photos, logging a
-completion without the timer), the full Start → Timer → Finish → PB
-result loop (including resuming or discarding a run left active after
-an accidental close), Missions (pick how much time you have, get a
+All 7 phases of the MVP build order in SPEC.md are done: project
+setup, routing, responsive layout, seed data, local persistence, task
+status/due-date calculation, the Tasks and Task detail screens
+(status/room filters, per-task photos, logging a completion without
+the timer), the full Start → Timer → Finish → PB result loop
+(including resuming or discarding a run left active after an
+accidental close), Missions (pick how much time you have, get a
 time-fit mission built from what's overdue, run through it task by
 task to a final summary), History/Stats (runs grouped by day with date
 filters; total time/runs/PBs this week, current streak, and the
-most-improved task), and Notifications (the Home screen's overdue
-banner, a Settings screen for the morning reminder/time/threshold, and
-a once-per-day browser notification summarising super-overdue jobs).
+most-improved task), Notifications (the Home screen's overdue banner,
+a Settings screen for the morning reminder/time/threshold, and a
+once-per-day browser notification summarising super-overdue jobs), and
+Phase 7 Polish:
+
+- Haptic/sound feedback on finishing a task (stronger for a personal
+  best), both togglable in Settings, plus a `showEstimates` toggle that
+  hides estimated durations on the timer and task detail when off.
+- Empty-state wording audited across every screen — in particular,
+  History's "no runs" message is now filter-aware instead of always
+  claiming there's no history at all.
+- Accessibility audit: fixed two real contrast failures (light-mode
+  warning-status text, dark-mode button text), brought two touch
+  targets up to the 44px minimum used elsewhere, gave the icon-only
+  Settings link a proper hit area, and added a visible focus-visible
+  ring (there wasn't one).
+- Light entrance/celebration animations (timer start, run result,
+  mission step result, trophy pop on a PB, card entrances, button press
+  feedback), all collapsing under `prefers-reduced-motion`.
+- Installability: replaced leftover scaffold icons with a real app icon
+  and correct manifest entries.
+- Offline behaviour verified end-to-end in a real browser: with the
+  server killed outright, deep-linked routes still load from the
+  service worker's cache (confirmed via `deliveryType: "cache-storage"`,
+  zero bytes transferred), and a full start-timer → finish → PB flow
+  works entirely offline against `localStorage`.
+
+The one item from SPEC.md's "MVP definition of done" that's inherently
+a manual, on-device check rather than something verifiable in this
+repo: actually adding the app to an iPhone home screen via Safari.
 
 ### Deviations from SPEC.md
 
