@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { markTaskCompleted } from './task.service'
+import { createTask, markTaskCompleted } from './task.service'
 import type { Task } from './task.types'
 
 function buildTask(overrides: Partial<Task> = {}): Task {
@@ -42,5 +42,30 @@ describe('markTaskCompleted', () => {
     const updated = markTaskCompleted(task, new Date('2026-09-20T00:00:00.000Z'))
 
     expect(updated.lastCompletedAt).toBe('2026-09-20T00:00:00.000Z')
+  })
+})
+
+describe('createTask', () => {
+  it('builds a fresh, never-done task from the given fields', () => {
+    const now = new Date('2026-09-23T00:00:00.000Z')
+
+    const task = createTask(
+      { name: 'Clean fridge', roomId: 'kitchen', frequencyDays: 21, estimatedSeconds: 600 },
+      now,
+      'clean-fridge-1',
+    )
+
+    expect(task).toEqual({
+      id: 'clean-fridge-1',
+      name: 'Clean fridge',
+      roomId: 'kitchen',
+      frequencyDays: 21,
+      estimatedSeconds: 600,
+      personalBestSeconds: null,
+      lastCompletedAt: null,
+      createdAt: '2026-09-23T00:00:00.000Z',
+      active: true,
+      supplyIds: [],
+    })
   })
 })

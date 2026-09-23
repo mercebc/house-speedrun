@@ -131,6 +131,13 @@ function SettingsForm({
         </Link>
         <p className="settings__hint">Upload a photo for each product or tool, and say which tasks use it.</p>
       </div>
+
+      <div className="settings__field">
+        <Link to="/manage-tasks" className="settings__link">
+          Manage tasks →
+        </Link>
+        <p className="settings__hint">Rename tasks, add new ones, or remove ones you don't need.</p>
+      </div>
     </>
   )
 }

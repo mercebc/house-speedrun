@@ -9,6 +9,7 @@ import { History } from '../pages/History'
 import { Stats } from '../pages/Stats'
 import { Settings } from '../pages/Settings'
 import { Supplies } from '../pages/Supplies'
+import { ManageTasks } from '../pages/ManageTasks'
 
 export function AppRoutes() {
   return (
@@ -23,6 +24,7 @@ export function AppRoutes() {
       <Route path="/stats" element={<Stats />} />
       <Route path="/settings" element={<Settings />} />
       <Route path="/supplies" element={<Supplies />} />
+      <Route path="/manage-tasks" element={<ManageTasks />} />
     </Routes>
   )
 }

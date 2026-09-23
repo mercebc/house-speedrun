@@ -47,6 +47,14 @@ export function createLocalStorageService(): StorageService {
       write(KEYS.tasks, next)
     },
 
+    async deleteTask(taskId: string): Promise<void> {
+      const tasks = await this.getTasks()
+      write(
+        KEYS.tasks,
+        tasks.filter((t) => t.id !== taskId),
+      )
+    },
+
     async getRuns(): Promise<CleaningRun[]> {
       return read<CleaningRun[]>(KEYS.runs, [])
     },

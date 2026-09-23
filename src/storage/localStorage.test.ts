@@ -72,6 +72,17 @@ describe('localStorage StorageService', () => {
 
       expect(tasks.filter((t) => t.id === updated.id)).toEqual([updated])
     })
+
+    it('removes a task', async () => {
+      const storage = createLocalStorageService()
+      const remove = buildTask({ id: 'remove-me' })
+      await storage.saveTask(remove)
+
+      await storage.deleteTask('remove-me')
+      const tasks = await storage.getTasks()
+
+      expect(tasks.find((t) => t.id === 'remove-me')).toBeUndefined()
+    })
   })
 
   describe('runs', () => {

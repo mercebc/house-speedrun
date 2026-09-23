@@ -95,6 +95,12 @@ describe('Settings page', () => {
     expect(await screen.findByRole('link', { name: /cleaning supplies/i })).toHaveAttribute('href', '/supplies')
   })
 
+  it('links to manage tasks', async () => {
+    renderSettings()
+
+    expect(await screen.findByRole('link', { name: /manage tasks/i })).toHaveAttribute('href', '/manage-tasks')
+  })
+
   it('shows the current vibration, sound, and estimate settings once loaded', async () => {
     renderSettings(
       createFakeStorage({

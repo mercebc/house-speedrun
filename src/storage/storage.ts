@@ -26,6 +26,7 @@ export const DEFAULT_SETTINGS: Settings = {
 export interface StorageService {
   getTasks(): Promise<Task[]>
   saveTask(task: Task): Promise<void>
+  deleteTask(taskId: string): Promise<void>
 
   getRuns(): Promise<CleaningRun[]>
   saveRun(run: CleaningRun): Promise<void>

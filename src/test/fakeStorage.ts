@@ -33,6 +33,9 @@ export function createFakeStorage(
       const index = tasks.findIndex((t) => t.id === task.id)
       tasks = index === -1 ? [...tasks, task] : tasks.map((t) => (t.id === task.id ? task : t))
     },
+    async deleteTask(taskId: string) {
+      tasks = tasks.filter((t) => t.id !== taskId)
+    },
     async getRuns() {
       return runs
     },
