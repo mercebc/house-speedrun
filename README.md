@@ -15,8 +15,9 @@ See [SPEC.md](./SPEC.md) for the full product and technical specification.
 - PWA (installable, offline-capable) via `vite-plugin-pwa`
 - Local persistence (`localStorage`) behind a `StorageService` abstraction,
   so a backend can replace it later without touching the UI
-- Photos are stored separately in IndexedDB (via a `PhotoStorageService`),
-  since they're too large for `localStorage`'s quota
+- Supply-catalogue photos are stored separately in IndexedDB (via a
+  `PhotoStorageService`, keyed by supply id), since they're too large
+  for `localStorage`'s quota
 - Vitest + Testing Library
 
 ## Development
@@ -82,9 +83,13 @@ a once-per-day browser notification summarising super-overdue jobs).
   fridge, cabinets, windows/mirrors, mopping, etc.), all at a 7+ day
   frequency — the app is meant to feel like a fun occasional prompt, not
   a nagging daily checklist.
-- Each task supports an optional user-uploaded photo (resized client-side,
-  stored as a `Blob` in IndexedDB, keyed by task id) for a personalized
-  feel. This wasn't in the original spec's data model.
+- Instead of one uploaded "room photo" per task, each task shows a
+  collage of the actual cleaning products/tools it needs (a `Supply`
+  catalogue — `src/data/seedSupplies.ts`), and missions show the
+  combined "Gather" list across all their tasks. Photos are uploaded
+  once per product on a dedicated Supplies catalogue page (linked from
+  Settings), not per task — see `src/pages/Supplies.tsx`. This wasn't
+  in the original spec's data model.
 - Wording never implies a task "was never done" just because it has no
   logged completion — "Not logged yet" instead of "Never done" — and a
   task can be marked done (with a backdatable date) without running the
