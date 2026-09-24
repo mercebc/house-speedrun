@@ -1,0 +1,95 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { ItemPhoto } from './ItemPhoto'
+import { PhotoStorageProvider } from '../storage/PhotoStorageProvider'
+import type { PhotoStorageService } from '../storage/photoStorage'
+import type { ReactNode } from 'react'
+
+vi.mock('../utils/image', () => ({
+  resizeImage: vi.fn(async (file: Blob) => file),
+}))
+
+function createFakePhotoStorage(initial?: Blob): PhotoStorageService {
+  let photo: Blob | null = initial ?? null
+  return {
+    async getPhoto() {
+      return photo
+    },
+    async savePhoto(_itemId, next) {
+      photo = next
+    },
+    async deletePhoto() {
+      photo = null
+    },
+  }
+}
+
+const ORIGINAL_CREATE_OBJECT_URL = URL.createObjectURL
+const ORIGINAL_REVOKE_OBJECT_URL = URL.revokeObjectURL
+
+beforeEach(() => {
+  URL.createObjectURL = vi.fn(() => 'blob:fake-url')
+  URL.revokeObjectURL = vi.fn()
+})
+
+afterEach(() => {
+  URL.createObjectURL = ORIGINAL_CREATE_OBJECT_URL
+  URL.revokeObjectURL = ORIGINAL_REVOKE_OBJECT_URL
+  vi.clearAllMocks()
+})
+
+function renderItemPhoto(storage: PhotoStorageService, defaultIcon?: ReactNode) {
+  render(
+    <PhotoStorageProvider storage={storage}>
+      <ItemPhoto itemId="clean-oven" itemName="Clean oven" defaultIcon={defaultIcon} />
+    </PhotoStorageProvider>,
+  )
+}
+
+describe('ItemPhoto', () => {
+  it('shows an upload prompt when there is no photo yet', async () => {
+    renderItemPhoto(createFakePhotoStorage())
+
+    expect(await screen.findByRole('button', { name: /add a photo/i })).toBeInTheDocument()
+  })
+
+  it('shows the existing photo when one is saved', async () => {
+    renderItemPhoto(createFakePhotoStorage(new Blob(['bytes'], { type: 'image/jpeg' })))
+
+    const image = await screen.findByRole('img', { name: 'Clean oven' })
+    expect(image).toHaveAttribute('src', 'blob:fake-url')
+  })
+
+  it('shows the default icon with a change affordance when one is provided and no photo exists', async () => {
+    renderItemPhoto(createFakePhotoStorage(), <svg data-testid="default-icon" />)
+
+    const changeButton = await screen.findByRole('button', { name: /^change$/i })
+    expect(changeButton.querySelector('[data-testid="default-icon"]')).toBeInTheDocument()
+    expect(screen.queryByText(/add a photo/i)).not.toBeInTheDocument()
+    expect(screen.getByLabelText(/change photo/i, { selector: 'input' })).toBeInTheDocument()
+  })
+
+  it('labels the input as "Change photo" once a photo already exists, even with no default icon', async () => {
+    renderItemPhoto(createFakePhotoStorage(new Blob(['bytes'], { type: 'image/jpeg' })))
+
+    await screen.findByRole('img', { name: 'Clean oven' })
+    expect(screen.getByLabelText(/change photo/i, { selector: 'input' })).toBeInTheDocument()
+  })
+
+  it('uploads and displays a new photo when a file is selected', async () => {
+    const storage = createFakePhotoStorage()
+    const user = userEvent.setup()
+    renderItemPhoto(storage)
+    await screen.findByRole('button', { name: /add a photo/i })
+
+    const file = new File(['bytes'], 'oven.jpg', { type: 'image/jpeg' })
+    const input = screen.getByLabelText(/add a photo/i, { selector: 'input' })
+    await user.upload(input, file)
+
+    await waitFor(async () => {
+      expect(await storage.getPhoto('clean-oven')).not.toBeNull()
+    })
+    expect(await screen.findByRole('img', { name: 'Clean oven' })).toBeInTheDocument()
+  })
+})
